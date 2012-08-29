@@ -1,7 +1,7 @@
 request = require('request')
 
 # Small HTTP client for easy json interactions with Cozy backends.
-class exports.Client
+class exports.JsonClient
 
     constructor: (@host) ->
 
