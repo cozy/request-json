@@ -5,6 +5,7 @@ class exports.JsonClient
 
     constructor: (@host) ->
 
+    # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback) ->
         request
             method: "GET"
@@ -19,6 +20,7 @@ class exports.JsonClient
                     callback(error, response, body)
                 
 
+    # Send a POST request to path with given JSON as body.
     post: (path, json, callback) ->
         request
             method: "POST"
@@ -26,6 +28,8 @@ class exports.JsonClient
             json: json
             , callback
 
+
+    # Send a PUT request to path with given JSON as body.
     put: (path, json, callback) ->
         request
             method: "PUT"
@@ -33,6 +37,8 @@ class exports.JsonClient
             json: json
             , callback
 
+
+    # Send a DELETE request to path.
     del: (path, callback) ->
         request
             method: "DELETE"
