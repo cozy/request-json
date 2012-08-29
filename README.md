@@ -2,7 +2,7 @@
 
 Request is a great client for NodeJS, but at Cozy we just use a small part of
 it : simple get, pust, post and delete requests that carry only JSON. This lib
-simplifies Request for this usages.
+aims to simplify Request usage for these situations.
 
 ## How it works
 
