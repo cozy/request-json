@@ -11,7 +11,8 @@ fakeServer = (json, code=200, callback=null) ->
             body += chunk
         req.on 'end', ->
             res.writeHead code, 'Content-Type': 'application/json'
-            callback(JSON.parse body) if callback?
+            body = JSON.parse(body) if body? and body
+            callback(body, req) if callback?
             res.end(JSON.stringify json)
 
 
@@ -20,7 +21,9 @@ describe "Client methods", ->
     describe "client.get", ->
 
         before ->
-            @serverGet = fakeServer msg:"ok"
+            @serverGet = fakeServer msg:"ok", 200, (body, req) ->
+                req.method.should.equal "GET"
+                req.url.should.equal  "/test-path/"
             @serverGet.listen 8888
             @client = new Client "http://localhost:8888/"
 
@@ -42,8 +45,10 @@ describe "Client methods", ->
     describe "client.post", ->
 
         before ->
-            @serverPost = fakeServer msg:"ok", 201, (body) ->
+            @serverPost = fakeServer msg:"ok", 201, (body, req) ->
                 should.exist body.postData
+                req.method.should.equal "POST"
+                req.url.should.equal  "/test-path/"
             @serverPost.listen 8888
             @client = new Client "http://localhost:8888/"
 
@@ -62,3 +67,49 @@ describe "Client methods", ->
             @response.statusCode.should.be.equal 201
             should.exist @body.msg
             @body.msg.should.equal "ok"
+
+
+    describe "client.put", ->
+
+        before ->
+            @serverPut = fakeServer msg:"ok", 200, (body, req) ->
+                should.exist body.putData
+                req.method.should.equal "PUT"
+                req.url.should.equal  "/test-path/123"
+            @serverPut.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            @serverPut.close()
+            
+
+        it "When I send put request to server", (done) ->
+            @client.put "test-path/123", putData: "data test", (error, response, body) =>
+                @response = response
+                done()
+
+        it "Then I get 200 as answer", ->
+            @response.statusCode.should.be.equal 200
+            
+
+    describe "client.del", ->
+
+        before ->
+            @serverPut = fakeServer msg:"ok", 204, (body, req) ->
+                req.method.should.equal "DELETE"
+                req.url.should.equal  "/test-path/123"
+            @serverPut.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            @serverPut.close()
+            
+        it "When I send delete request to server", (done) ->
+            @client.del "test-path/123", (error, response, body) =>
+                @response = response
+                done()
+
+        it "Then I get 204 as answer", ->
+            @response.statusCode.should.be.equal 204
+            
+
