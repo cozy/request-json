@@ -13,7 +13,7 @@ class exports.JsonClient
             uri: @host + path
             , (error, response, body) ->
                 try
-                    body = JSON.parse(body) if typeof data == "string"
+                    body = JSON.parse(body) if typeof body == "string"
                     callback(error, response, body)
                 catch err
                     callback(error, response, body)
