@@ -29,15 +29,15 @@
     "request": "2.10.0"
   },
   "devDependencies": {
-    "coffee-script": "*"
+    "coffee-script": "*",
+    "chai": "*"
   },
   "scripts": {
-    "prepublish": "coffee --compile main.coffee"
+    "prepublish": "cake build"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/mycozycloud/request-json.git"
   },
-  "dependencies": {},
   "optionalDependencies": {}
 }
