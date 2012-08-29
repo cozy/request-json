@@ -8,8 +8,12 @@ class exports.Client
     get: (path, callback) ->
         request
             method: "GET"
+            headers:
+                'accept': 'application/json'
             uri: @host + path
-            , callback
+            , (error, response, data) ->
+                data = JSON.parse(data) if typeof data != "object"
+                callback(error, response, data)
 
     post: (path, json, callback) ->
         request
