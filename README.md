@@ -7,6 +7,7 @@ aims to simplify Request usage for these situations.
 ## How it works
 
 ```javascript
+Client = require("request-json").JsonClient
 client = new Client "http://localhost:8888/"
 
 client.post "posts/", { title: "my title", content:"my content" }, \
