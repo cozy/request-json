@@ -29,7 +29,7 @@ class exports.JsonClient
             json: json
             , callback
 
-    delete: (path, callback) ->
+    del: (path, callback) ->
         request
             method: "DELETE"
             uri: @host + path
