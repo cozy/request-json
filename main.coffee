@@ -11,9 +11,13 @@ class exports.JsonClient
             headers:
                 'accept': 'application/json'
             uri: @host + path
-            , (error, response, data) ->
-                data = JSON.parse(data) if typeof data == "string"
-                callback(error, response, data)
+            , (error, response, body) ->
+                try
+                    body = JSON.parse(body) if typeof data == "string"
+                    callback(error, response, body)
+                catch err
+                    callback(error, response, body)
+                
 
     post: (path, json, callback) ->
         request
