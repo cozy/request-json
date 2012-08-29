@@ -1,0 +1,43 @@
+{
+  "name": "request-json",
+  "description": "HTTP client for very simple usages and JSON requests only",
+  "keywords": [
+    "requests",
+    "http",
+    "json",
+    "client"
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/mycozycloud/request-json/blob/master/LICENSE"
+    }
+  ],
+  "version": "0.1.0",
+  "homepage": "https://github.com/mycozycloud/request-json/",
+  "bugs": {
+    "url": "https://github.com/mycozycloud/request-json/issues"
+  },
+  "author": "Cozy Cloud <contact@mycozycloud.com> (http://mycozycloud.com)",
+  "contributors": [],
+  "engines": {
+    "node": ">= 0.6",
+    "npm": ">= 1.1"
+  },
+  "main": "./main.js",
+  "dependencies": {
+    "request": "2.10.0"
+  },
+  "devDependencies": {
+    "coffee-script": "*"
+  },
+  "scripts": {
+    "prepublish": "coffee --compile main.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mycozycloud/request-json.git"
+  },
+  "dependencies": {},
+  "optionalDependencies": {}
+}
