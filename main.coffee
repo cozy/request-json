@@ -1,4 +1,5 @@
-request = require('request')
+request = require "request"
+fs = require "fs"
 
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
