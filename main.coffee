@@ -45,3 +45,18 @@ class exports.JsonClient
             uri: @host + path
             , callback
 
+
+    # Send a post request with file located at given path as attachment
+    # (multipart form)
+    # Use a read stream for that.
+    sendFile: (path, filePath, callback) ->
+        req = request.post "#{@host}#{path}", callback
+        form = req.form()
+        form.append 'file', fs.createReadStream(filePath)
+
+
+    # Retrieve file located at *path* and save it as *filePath*.
+    # Use a write stream for that.
+    saveFile: (path, filePath, callback) ->
+        stream = client.getFile path, callback
+        stream.pipe fs.createWriteStream(filePath)
