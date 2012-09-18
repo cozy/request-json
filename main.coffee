@@ -1,7 +1,7 @@
 request = require "request"
 fs = require "fs"
 
-convertData =  (error, response, body, callback) ->
+parseBody =  (error, response, body, callback) ->
     try
         body = JSON.parse(body) if typeof body == "string"
         callback(error, response, body)
@@ -20,7 +20,8 @@ class exports.JsonClient
             headers:
                 'accept': 'application/json'
             uri: @host + path
-            , parseBody error, response, body, callbacky
+            , (error, response, body) ->
+                parseBody error, response, body, callback
 
 
     # Send a POST request to path with given JSON as body.
@@ -29,7 +30,8 @@ class exports.JsonClient
             method: "POST"
             uri: @host + path
             json: json
-            , parseBody error, response, body, callbacky
+            , (error, response, body) ->
+                parseBody error, response, body, callback
 
 
     # Send a PUT request to path with given JSON as body.
@@ -38,7 +40,8 @@ class exports.JsonClient
             method: "PUT"
             uri: @host + path
             json: json
-            , parseBody error, response, body, callbacky
+            , (error, response, body) ->
+                parseBody error, response, body, callback
 
 
     # Send a DELETE request to path.
@@ -46,7 +49,8 @@ class exports.JsonClient
         request
             method: "DELETE"
             uri: @host + path
-            , parseBody error, response, body, callbacky
+            , (error, response, body) ->
+                parseBody error, response, body, callback
 
 
     # Send a post request with file located at given path as attachment
