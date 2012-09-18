@@ -1,6 +1,13 @@
 request = require "request"
 fs = require "fs"
 
+convertData =  (error, response, body, callback) ->
+    try
+        body = JSON.parse(body) if typeof body == "string"
+        callback(error, response, body)
+    catch err
+        callback(error, response, body)
+              
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
 
@@ -13,13 +20,8 @@ class exports.JsonClient
             headers:
                 'accept': 'application/json'
             uri: @host + path
-            , (error, response, body) ->
-                try
-                    body = JSON.parse(body) if typeof body == "string"
-                    callback(error, response, body)
-                catch err
-                    callback(error, response, body)
-                
+            , parseBody error, response, body, callbacky
+
 
     # Send a POST request to path with given JSON as body.
     post: (path, json, callback) ->
@@ -27,7 +29,7 @@ class exports.JsonClient
             method: "POST"
             uri: @host + path
             json: json
-            , callback
+            , parseBody error, response, body, callbacky
 
 
     # Send a PUT request to path with given JSON as body.
@@ -36,7 +38,7 @@ class exports.JsonClient
             method: "PUT"
             uri: @host + path
             json: json
-            , callback
+            , parseBody error, response, body, callbacky
 
 
     # Send a DELETE request to path.
@@ -44,7 +46,7 @@ class exports.JsonClient
         request
             method: "DELETE"
             uri: @host + path
-            , callback
+            , parseBody error, response, body, callbacky
 
 
     # Send a post request with file located at given path as attachment
