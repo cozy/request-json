@@ -56,9 +56,15 @@ class exports.JsonClient
     # Send a post request with file located at given path as attachment
     # (multipart form)
     # Use a read stream for that.
-    sendFile: (path, filePath, callback) ->
+    sendFile: (path, filePath, data, callback) ->
+    
+        if typeof(data) == "function"
+            callback = data
         req = request.post "#{@host}#{path}", callback
         form = req.form()
+        unless typeof(data) == "function"
+            for att of data
+                form.append(att, data[att])
         form.append 'file', fs.createReadStream(filePath)
 
 
