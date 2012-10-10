@@ -22,4 +22,13 @@ client.put "posts/123/", title: "my new title", (error, response, body) ->
 
 client.del "posts/123/", (error, response, body) ->
     print response.statusCode
+
+# Extra : files
+
+@client.sendFile "attachments/", "./test.png", name: "test", (err, res, body) ->
+    console.log err if err
+
+@client.saveFile "attachments/test.png", './test-get.png', (err, res, body) ->
+    console.log err if err
+    resultStats = fs.statSync('./test-get.png')
 ```
