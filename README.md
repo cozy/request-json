@@ -7,30 +7,32 @@ aims to simplify Request usage for these situations.
 ## How it works
 
 ```javascript
-Client = require("request-json").JsonClient
-client = new Client "http://localhost:8888/"
+Client = require('request-json').JsonClient
+client = new Client 'http://localhost:8888/'
 
-client.post "posts/", { title: "my title", content:"my content" }, \
-            (error, response, body) ->
+data = title: 'my title', content: 'my content'
+client.post 'posts/', data, (err, res, body) ->
     print response.statusCode
 
-client.get "posts/", (error, response, body) ->
+client.get 'posts/', (err, res, body) ->
     print body.rows[0].title
 
-client.put "posts/123/", title: "my new title", (error, response, body) ->
+data = title: "my new title"
+client.put 'posts/123/', (err, res, body) ->
     print response.statusCode
 
-client.del "posts/123/", (error, response, body) ->
+client.del 'posts/123/', (err, res, body) ->
     print response.statusCode
 ```
 
 ### Extra : files
 
 ```javascript
-client.sendFile "attachments/", "./test.png", name: "test", (err, res, body) ->
+data = name: "test"
+client.sendFile 'attachments/', './test.png', data, (err, res, body) ->
     console.log err if err
 
-client.saveFile "attachments/test.png", './test-get.png', (err, res, body) ->
+client.saveFile 'attachments/test.png', './test-get.png', (err, res, body) ->
     console.log err if err
     resultStats = fs.statSync('./test-get.png')
 ```
