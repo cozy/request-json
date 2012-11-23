@@ -13,6 +13,14 @@ class exports.JsonClient
 
     constructor: (@host) ->
 
+
+    # Set basic authentication on each requests
+    setBasicAuth: (username, password)
+        credentials = username + ':' + password
+        basicCredentials = new Buffer(credientials).toString('base64')
+        @auth = "Basic #{auth}"
+
+ 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback) ->
         request
@@ -20,6 +28,8 @@ class exports.JsonClient
             headers:
                 'accept': 'application/json'
             uri: @host + path
+            headers:
+                authorization: @auth
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
@@ -30,6 +40,8 @@ class exports.JsonClient
             method: "POST"
             uri: @host + path
             json: json
+            headers:
+                authorization: @auth
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
@@ -40,6 +52,8 @@ class exports.JsonClient
             method: "PUT"
             uri: @host + path
             json: json
+            headers:
+                authorization: @auth
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
@@ -49,6 +63,8 @@ class exports.JsonClient
         request
             method: "DELETE"
             uri: @host + path
+            headers:
+                authorization: @auth
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
@@ -60,7 +76,8 @@ class exports.JsonClient
     
         if typeof(data) == "function"
             callback = data
-        req = request.post "#{@host}#{path}", callback
+
+        req = @post path, null, callback
         form = req.form()
         unless typeof(data) == "function"
             for att of data
