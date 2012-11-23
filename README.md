@@ -1,8 +1,14 @@
 ## About
 
-Request is a great client for NodeJS, but at Cozy we just use a small part of
-it : simple get, pust, post and delete requests that carry only JSON. This lib
-aims to simplify Request usage for these situations.
+Request is a great client for NodeJS, but if you deal only with JSON, things
+could be more straightforward. This lib aims to simplify Request usage for 
+JSON only requests.
+
+## Install
+
+Add it to your package json or run: 
+
+    npm install request-json
 
 ## How it works
 
