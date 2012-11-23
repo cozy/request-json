@@ -6,7 +6,7 @@ JSON only requests.
 
 ## Install
 
-Add it to your package json or run: 
+Add it to your package.json file or run in your project folder: 
 
     npm install request-json
 
