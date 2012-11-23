@@ -16,7 +16,7 @@ fakeServer = (json, code=200, callback=null) ->
             res.end(JSON.stringify json)
 
 
-describe "Client methods", ->
+describe "Common requests", ->
 
     describe "client.get", ->
 
@@ -111,5 +111,33 @@ describe "Client methods", ->
 
         it "Then I get 204 as answer", ->
             @response.statusCode.should.be.equal 204
-            
 
+
+describe "Basic authentication", ->
+
+    describe "authentified client.get", ->
+
+        before ->
+            @serverGet = fakeServer msg:"ok", 200, (body, req) ->
+                auth = req.headers.authorization.split(' ')[1]
+                auth = new Buffer(auth, 'base64').toString('ascii')
+                auth.should.equal 'john:secret'
+                req.method.should.equal "GET"
+                req.url.should.equal  "/test-path/"
+            @serverGet.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            @serverGet.close()
+            
+        it "When I send get request to server", (done) ->
+            @client.setBasicAuth 'john', 'secret'
+            @client.get "test-path/", (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 200
+                @body = body
+                done()
+
+        it "Then I get msg: ok as answer.", ->
+            should.exist @body.msg
+            @body.msg.should.equal "ok"

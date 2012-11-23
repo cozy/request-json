@@ -11,14 +11,15 @@ parseBody =  (error, response, body, callback) ->
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
 
+
     constructor: (@host) ->
 
 
     # Set basic authentication on each requests
-    setBasicAuth: (username, password)
+    setBasicAuth: (username, password) ->
         credentials = username + ':' + password
-        basicCredentials = new Buffer(credientials).toString('base64')
-        @auth = "Basic #{auth}"
+        basicCredentials = new Buffer(credentials).toString('base64')
+        @auth = "Basic #{basicCredentials}"
 
  
     # Send a GET request to path. Parse response body to obtain a JS object.
@@ -26,10 +27,9 @@ class exports.JsonClient
         request
             method: "GET"
             headers:
-                'accept': 'application/json'
-            uri: @host + path
-            headers:
+                accept: 'application/json'
                 authorization: @auth
+            uri: @host + path
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
@@ -53,7 +53,7 @@ class exports.JsonClient
             uri: @host + path
             json: json
             headers:
-                authorization: @auth
+                    authorization: @auth
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
