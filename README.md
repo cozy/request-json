@@ -23,7 +23,7 @@ client.post 'posts/', data, (err, res, body) ->
 client.get 'posts/', (err, res, body) ->
     print body.rows[0].title
 
-data = title: "my new title"
+data = title: 'my new title'
 client.put 'posts/123/', (err, res, body) ->
     print response.statusCode
 
@@ -40,13 +40,13 @@ client.sendFile 'attachments/', './test.png', data, (err, res, body) ->
 
 client.saveFile 'attachments/test.png', './test-get.png', (err, res, body) ->
     console.log err if err
-    resultStats = fs.statSync('./test-get.png')
+    resultStats = fs.statSync './test-get.png'
 ```
 
 ### Extra : basic authentication
 
 ```javascript
-client.setBasicAuth('john', 'secret')
+client.setBasicAuth 'john', 'secret'
 client.get 'private/posts/', (err, res, body) ->
     print body.rows[0].title
 ```
