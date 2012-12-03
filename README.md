@@ -18,17 +18,17 @@ client = new Client 'http://localhost:8888/'
 
 data = title: 'my title', content: 'my content'
 client.post 'posts/', data, (err, res, body) ->
-    print response.statusCode
+    console.log response.statusCode
 
 client.get 'posts/', (err, res, body) ->
-    print body.rows[0].title
+    console.log body.rows[0].title
 
 data = title: 'my new title'
 client.put 'posts/123/', (err, res, body) ->
-    print response.statusCode
+    console.log response.statusCode
 
 client.del 'posts/123/', (err, res, body) ->
-    print response.statusCode
+    console.log response.statusCode
 ```
 
 ### Extra : files
@@ -40,7 +40,6 @@ client.sendFile 'attachments/', './test.png', data, (err, res, body) ->
 
 client.saveFile 'attachments/test.png', './test-get.png', (err, res, body) ->
     console.log err if err
-    resultStats = fs.statSync './test-get.png'
 ```
 
 ### Extra : basic authentication
@@ -48,5 +47,5 @@ client.saveFile 'attachments/test.png', './test-get.png', (err, res, body) ->
 ```javascript
 client.setBasicAuth 'john', 'secret'
 client.get 'private/posts/', (err, res, body) ->
-    print body.rows[0].title
+    console.log body.rows[0].title
 ```
