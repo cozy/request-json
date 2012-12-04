@@ -1,7 +1,8 @@
 ## About
 
-Request is a great client for NodeJS, but if you deal only with JSON, things
-could be more straightforward. This lib aims to simplify Request usage for 
+[Request](https://github.com/mikeal/request) is a great HTTP client for NodeJS,
+but if you deal only with JSON, things could be more straightforward. This lib
+aims to simplify Request usage for 
 JSON only requests.
 
 ## Install
