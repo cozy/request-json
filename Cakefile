@@ -24,6 +24,6 @@ task "build", "", ->
     if err
       console.log "Running coffee-script compiler caught exception: \n" + err
     else
-      console.log "Compilation succeeds."
+      console.log "Compilation succeeded."
       
     console.log stdout
