@@ -13,6 +13,38 @@ Add it to your package.json file or run in your project folder:
 
 ## How it works
 
+with Javascript:
+
+```javascript
+var Client = require('request-json').JsonClient;
+var client = new Client('http://localhost:8888/');
+
+var data = {
+  title: 'my title',
+  content: 'my content'
+};
+client.post('posts/', data, function(err, res, body) {
+  return console.log(response.statusCode);
+});
+
+client.get('posts/', function(err, res, body) {
+  return console.log(body.rows[0].title);
+});
+
+data = {
+  title: 'my new title'
+};
+client.put('posts/123/', function(err, res, body) {
+  return console.log(response.statusCode);
+});
+
+client.del('posts/123/', function(err, res, body) {
+  return console.log(response.statusCode);
+});
+```
+
+with Coffeescript:
+
 ```javascript
 Client = require('request-json').JsonClient
 client = new Client 'http://localhost:8888/'
@@ -34,6 +66,28 @@ client.del 'posts/123/', (err, res, body) ->
 
 ### Extra : files
 
+with Javascript:
+
+```javascript
+data = {
+  name: "test"
+};
+client.sendFile('attachments/', './test.png', data, function(err, res, body) {
+  if (err) {
+    return console.log(err);
+  }
+});
+
+client.saveFile('attachments/test.png', './test-get.png', function(err, res, body) {
+  if (err) {
+    return console.log(err);
+  }
+});
+
+```
+
+with Coffeescript:
+
 ```javascript
 data = name: "test"
 client.sendFile 'attachments/', './test.png', data, (err, res, body) ->
@@ -43,7 +97,22 @@ client.saveFile 'attachments/test.png', './test-get.png', (err, res, body) ->
     console.log err if err
 ```
 
+
+
 ### Extra : basic authentication
+
+with Javascript:
+
+```javascript
+client.setBasicAuth('john', 'secret');
+client.get('private/posts/', function(err, res, body) {
+  return console.log(body.rows[0].title);
+});
+
+```
+
+
+with Coffeescript:
 
 ```javascript
 client.setBasicAuth 'john', 'secret'
