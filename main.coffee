@@ -6,7 +6,7 @@ parseBody =  (error, response, body, callback) ->
         body = JSON.parse(body) if typeof body == "string"
         callback(error, response, body)
     catch err
-        callback(error, response, body)
+        callback(err, response, body)
               
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
