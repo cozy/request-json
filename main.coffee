@@ -3,11 +3,11 @@ fs = require "fs"
 
 parseBody =  (error, response, body, callback) ->
     try
-        body = JSON.parse(body) if typeof body == "string"
-        callback(error, response, body)
+        body = JSON.parse(body) if typeof body is "string"
+        callback error, response, body
     catch err
-        callback(err, response, body)
-              
+        callback err, response, body
+
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
 
@@ -17,15 +17,15 @@ class exports.JsonClient
 
     # Set basic authentication on each requests
     setBasicAuth: (username, password) ->
-        credentials = username + ':' + password
+        credentials = "#{username}:#{password}"
         basicCredentials = new Buffer(credentials).toString('base64')
         @auth = "Basic #{basicCredentials}"
 
- 
+
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback) ->
         request
-            method: "GET"
+            method: 'GET'
             headers:
                 accept: 'application/json'
                 authorization: @auth
@@ -53,7 +53,7 @@ class exports.JsonClient
             uri: @host + path
             json: json
             headers:
-                    authorization: @auth
+                authorization: @auth
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
@@ -73,15 +73,13 @@ class exports.JsonClient
     # (multipart form)
     # Use a read stream for that.
     sendFile: (path, filePath, data, callback) ->
-    
-        if typeof(data) == "function"
-            callback = data
+        callback = data if typeof(data) is "function"
 
         req = @post path, null, callback
         form = req.form()
-        unless typeof(data) == "function"
+        unless typeof(data) is "function"
             for att of data
-                form.append(att, data[att])
+                form.append att, data[att]
         form.append 'file', fs.createReadStream(filePath)
 
 
