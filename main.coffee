@@ -21,6 +21,9 @@ class exports.JsonClient
         basicCredentials = new Buffer(credentials).toString('base64')
         @auth = "Basic #{basicCredentials}"
 
+    setToken: (token) ->
+        @token = token
+
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback) ->
@@ -29,6 +32,7 @@ class exports.JsonClient
             headers:
                 accept: 'application/json'
                 authorization: @auth
+                'x-auth-token': @token
             uri: @host + path
             , (error, response, body) ->
                 parseBody error, response, body, callback
@@ -42,6 +46,7 @@ class exports.JsonClient
             json: json
             headers:
                 authorization: @auth
+                'x-auth-token': @token
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
@@ -54,6 +59,7 @@ class exports.JsonClient
             json: json
             headers:
                 authorization: @auth
+                'x-auth-token': @token
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
@@ -65,6 +71,7 @@ class exports.JsonClient
             uri: @host + path
             headers:
                 authorization: @auth
+                'x-auth-token': @token
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
