@@ -134,7 +134,7 @@ describe "Files", ->
     describe "client.saveFile", ->
 
         before ->
-            @app = fakeDownloadServer('/test-file', './README.md')
+            @app = fakeDownloadServer '/test-file', './README.md'
             @server = @app.listen 8888
             @client = new Client "http://localhost:8888/"
 
@@ -143,7 +143,8 @@ describe "Files", ->
             @server.close()
 
         it "When I send get request to server", (done) ->
-            @client.saveFile 'test-file', './dl-README.md', (error, response, body) =>
+            @client.saveFile 'test-file', './dl-README.md', \
+                             (error, response, body) =>
                 should.not.exist error
                 response.statusCode.should.be.equal 200
                 done()
