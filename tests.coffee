@@ -22,9 +22,6 @@ fakeDownloadServer = (url, path, callback= ->) ->
     app.get url, (req, res) ->
         res.sendfile path
         callback req
-    app.use express.errorHandler
-        dumpExceptions: true
-        showStack: true
 
 fakeUploadServer = (url, dir, callback= -> ) ->
     app = express()
