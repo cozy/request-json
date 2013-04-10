@@ -1,5 +1,7 @@
 should = require('chai').Should()
 http = require "http"
+express = require "express"
+fs = require "fs"
 
 Client = require("./main").JsonClient
 
@@ -15,6 +17,21 @@ fakeServer = (json, code=200, callback=null) ->
             callback(body, req) if callback?
             res.end(JSON.stringify json)
 
+fakeDownloadServer = (url, path, callback= ->) ->
+    app = express()
+    app.get url, (req, res) ->
+        res.sendfile path
+        callback req
+
+fakeUploadServer = (url, dir, callback= -> ) ->
+    app = express()
+    fs.mkdirSync dir
+    app.use express.bodyParser uploadDir: dir
+    app.post url, (req, res) ->
+        for key, file of req.files
+            fs.renameSync file.path, dir + '/' + file.name
+        res.send 200, msg:'ok'
+
 
 describe "Common requests", ->
 
@@ -29,7 +46,7 @@ describe "Common requests", ->
 
         after ->
             @serverGet.close()
-            
+
         it "When I send get request to server", (done) ->
             @client.get "test-path/", (error, response, body) =>
                 should.not.exist error
@@ -54,7 +71,7 @@ describe "Common requests", ->
 
         after ->
             @serverPost.close()
-            
+
 
         it "When I send post request to server", (done) ->
             @client.post "test-path/", postData: "data test", (error, response, body) =>
@@ -81,7 +98,7 @@ describe "Common requests", ->
 
         after ->
             @serverPut.close()
-            
+
 
         it "When I send put request to server", (done) ->
             @client.put "test-path/123", putData: "data test", (error, response, body) =>
@@ -90,7 +107,7 @@ describe "Common requests", ->
 
         it "Then I get 200 as answer", ->
             @response.statusCode.should.be.equal 200
-            
+
 
     describe "client.del", ->
 
@@ -103,7 +120,7 @@ describe "Common requests", ->
 
         after ->
             @serverPut.close()
-            
+
         it "When I send delete request to server", (done) ->
             @client.del "test-path/123", (error, response, body) =>
                 @response = response
@@ -112,6 +129,52 @@ describe "Common requests", ->
         it "Then I get 204 as answer", ->
             @response.statusCode.should.be.equal 204
 
+describe "Files", ->
+
+    describe "client.saveFile", ->
+
+        before ->
+            @app = fakeDownloadServer('/test-file', './README.md')
+            @server = @app.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            fs.unlinkSync './dl-README.md'
+            @server.close()
+
+        it "When I send get request to server", (done) ->
+            @client.saveFile 'test-file', './dl-README.md', (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 200
+                done()
+
+        it "Then I receive the correct file", ->
+            fileStats = fs.statSync('./README.md')
+            resultStats = fs.statSync('./dl-README.md')
+            resultStats.size.should.equal fileStats.size
+
+    describe "client.sendFile", ->
+
+        before ->
+            @app = fakeUploadServer('/test-file', './up')
+            @server = @app.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            fs.unlinkSync './up/README.md'
+            fs.rmdir './up'
+            @server.close()
+
+        it "When I send post request to server", (done) ->
+            @client.sendFile 'test-file', './README.md', (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 200
+                done()
+
+        it "Then I receive the correct file", ->
+            fileStats = fs.statSync('./README.md')
+            resultStats = fs.statSync('./up/README.md')
+            resultStats.size.should.equal fileStats.size
 
 describe "Basic authentication", ->
 
@@ -129,7 +192,7 @@ describe "Basic authentication", ->
 
         after ->
             @serverGet.close()
-            
+
         it "When I send get request to server", (done) ->
             @client.setBasicAuth 'john', 'secret'
             @client.get "test-path/", (error, response, body) =>
