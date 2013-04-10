@@ -23,7 +23,7 @@ class exports.JsonClient
 
 
     # Send a GET request to path. Parse response body to obtain a JS object.
-    get: (path, callback) ->
+    get: (path, callback, parse = true) ->
         request
             method: 'GET'
             headers:
@@ -31,7 +31,8 @@ class exports.JsonClient
                 authorization: @auth
             uri: @host + path
             , (error, response, body) ->
-                parseBody error, response, body, callback
+                if parse then parseBody error, response, body, callback
+                else callback error, response, body
 
 
     # Send a POST request to path with given JSON as body.
@@ -86,5 +87,5 @@ class exports.JsonClient
     # Retrieve file located at *path* and save it as *filePath*.
     # Use a write stream for that.
     saveFile: (path, filePath, callback) ->
-        stream = @get path, callback
+        stream = @get path, callback, false #do not parse
         stream.pipe fs.createWriteStream(filePath)
