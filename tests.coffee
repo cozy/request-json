@@ -141,3 +141,59 @@ describe "Basic authentication", ->
         it "Then I get msg: ok as answer.", ->
             should.exist @body.msg
             @body.msg.should.equal "ok"
+
+
+describe "Set token", ->
+
+    describe "authentified client.get", ->
+
+        before ->
+            @serverGet = fakeServer msg:"ok", 200, (body, req) ->
+                token = req.headers['x-auth-token']
+                token.should.equal 'cozy'
+                req.method.should.equal "GET"
+                req.url.should.equal  "/test-path/"
+            @serverGet.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            @serverGet.close()
+
+        it "When I send setToken request", (done) ->
+            @client.setToken 'cozy'
+            @client.get "test-path/", (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 200
+                @body = body
+                done()
+
+        it "Then I get msg: ok as answer.", ->
+            should.exist @body.msg
+            @body.msg.should.equal "ok"
+
+    describe "authentified client.post", ->
+
+        before ->
+            @serverPost = fakeServer msg:"ok", 200, (body, req) ->
+                token = req.headers['x-auth-token']
+                token.should.equal 'cozy'
+                should.exist body.postData
+                req.method.should.equal "POST"
+                req.url.should.equal  "/test-path/"
+            @serverPost.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            @serverPost.close()
+
+        it "When I send setToken request", (done) ->
+            @client.setToken 'cozy'
+            @client.post "test-path/", postData:"data test", (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 200
+                @body = body
+                done()
+
+        it "Then I get msg: ok as answer.", ->
+            should.exist @body.msg
+            @body.msg.should.equal "ok"
