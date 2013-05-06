@@ -13,14 +13,16 @@
       "url": "https://github.com/mycozycloud/request-json/blob/master/LICENSE"
     }
   ],
-  "version": "0.3.3",
+  "version": "0.3.4",
   "homepage": "https://github.com/mycozycloud/request-json/",
   "bugs": {
     "url": "https://github.com/mycozycloud/request-json/issues"
   },
   "author": "Cozy Cloud <contact@mycozycloud.com> (http://mycozycloud.com)",
   "contributors": [],
-  "engines": { "node": "*" },
+  "engines": {
+    "node": "*"
+  },
   "main": "./main.js",
   "dependencies": {
     "request": "2.11.1"
