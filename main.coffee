@@ -11,6 +11,7 @@ parseBody =  (error, response, body, callback) ->
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
 
+    agent: "request-json/1.0"
 
     constructor: (@host) ->
 
@@ -32,6 +33,7 @@ class exports.JsonClient
             headers:
                 accept: 'application/json'
                 authorization: @auth
+                "user-agent": @agent
                 'x-auth-token': @token
             uri: @host + path
             , (error, response, body) ->
@@ -47,6 +49,7 @@ class exports.JsonClient
             json: json
             headers:
                 authorization: @auth
+                "user-agent": @agent
                 'x-auth-token': @token
             , (error, response, body) ->
                 parseBody error, response, body, callback
@@ -60,6 +63,7 @@ class exports.JsonClient
             json: json
             headers:
                 authorization: @auth
+                "user-agent": @agent
                 'x-auth-token': @token
             , (error, response, body) ->
                 parseBody error, response, body, callback
