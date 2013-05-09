@@ -1,5 +1,6 @@
 request = require "request"
 fs = require "fs"
+url = require "url"
 
 parseBody =  (error, response, body, callback) ->
     try
@@ -35,7 +36,7 @@ class exports.JsonClient
                 authorization: @auth
                 "user-agent": @agent
                 'x-auth-token': @token
-            uri: @host + path
+            uri: url.resolve(@host, path)
             , (error, response, body) ->
                 if parse then parseBody error, response, body, callback
                 else callback error, response, body
@@ -45,7 +46,7 @@ class exports.JsonClient
     post: (path, json, callback) ->
         request
             method: "POST"
-            uri: @host + path
+            uri: url.resolve(@host, path)
             json: json
             headers:
                 authorization: @auth
@@ -59,7 +60,7 @@ class exports.JsonClient
     put: (path, json, callback) ->
         request
             method: "PUT"
-            uri: @host + path
+            uri: url.resolve(@host, path)
             json: json
             headers:
                 authorization: @auth
@@ -73,7 +74,7 @@ class exports.JsonClient
     del: (path, callback) ->
         request
             method: "DELETE"
-            uri: @host + path
+            uri: url.resolve(@host, path)
             headers:
                 authorization: @auth
                 'x-auth-token': @token
