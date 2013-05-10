@@ -30,7 +30,9 @@
   "devDependencies": {
     "coffee-script": "*",
     "express": "*",
-    "chai": "*"
+    "chai": "*",
+    "mocha": "*",
+    "should": "*"
   },
   "scripts": {
     "prepublish": "cake build"
