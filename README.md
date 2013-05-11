@@ -24,7 +24,7 @@ var data = {
   content: 'my content'
 };
 client.post('posts/', data, function(err, res, body) {
-  return console.log(response.statusCode);
+  return console.log(res.statusCode);
 });
 
 client.get('posts/', function(err, res, body) {
