@@ -25,7 +25,7 @@
   },
   "main": "./main.js",
   "dependencies": {
-    "request": "2.11.1"
+    "request": "2.21.0"
   },
   "devDependencies": {
     "coffee-script": "*",
