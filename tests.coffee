@@ -168,6 +168,8 @@ describe "Parsing edge cases", ->
         it 'should throw', (done) ->
             @client.get "test-path/", (error, response, body) =>
                 should.exist error
+                should.exist body
+                body.should.be.equal '{"this:"isnotjson}'
                 done()
 
 describe "Files", ->
