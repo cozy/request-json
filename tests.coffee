@@ -17,6 +17,13 @@ fakeServer = (json, code=200, callback=null) ->
             callback(body, req) if callback?
             res.end(JSON.stringify json)
 
+fakeServerRaw = (code, out) ->
+     http.createServer (req, res) ->
+        req.on 'data', (chunk) ->
+        req.on 'end', ->
+            res.writeHead code
+            res.end out
+
 fakeDownloadServer = (url, path, callback= ->) ->
     app = express()
     app.get url, (req, res) ->
@@ -128,6 +135,40 @@ describe "Common requests", ->
 
         it "Then I get 204 as answer", ->
             @response.statusCode.should.be.equal 204
+
+describe "Parsing edge cases", ->
+
+    describe "no body on 204", ->
+
+        before ->
+            @server = fakeServerRaw 204, ''
+            @server.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            @server.close()
+
+        it 'should not throw', (done) ->
+            @client.del "test-path/", (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 204
+                body.should.equal ''
+                done()
+
+    describe "invalid json", ->
+
+        before ->
+            @server = fakeServerRaw 200, '{"this:"isnotjson}'
+            @server.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            @server.close()
+
+        it 'should throw', (done) ->
+            @client.get "test-path/", (error, response, body) =>
+                should.exist error
+                done()
 
 describe "Files", ->
 
