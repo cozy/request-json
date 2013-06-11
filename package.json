@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/mycozycloud/request-json/issues"
   },
-  "author": "Cozy Cloud <contact@mycozycloud.com> (http://mycozycloud.com)",
+  "author": "Cozy Cloud <contact@cozycloud.cc> (http://cozycloud.cc)",
   "contributors": [],
   "engines": {
     "node": "*"
