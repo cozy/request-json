@@ -3,11 +3,17 @@ fs = require "fs"
 url = require "url"
 
 parseBody =  (error, response, body, callback) ->
-    try
-        body = JSON.parse(body) if typeof body is "string"
-        callback error, response, body
-    catch err
-        callback err, response, body
+    if typeof body is "string" and body isnt ""
+        try
+            parsed = JSON.parse(body)
+        catch err
+            error ?= err
+            parsed = body
+
+    else parsed = body
+
+    callback error, response, parsed
+
 
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
