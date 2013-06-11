@@ -11,6 +11,11 @@ Add it to your package.json file or run in your project folder:
 
     npm install request-json
 
+## Build status
+
+[![Build
+Status](https://travis-ci.org/mycozycloud/request-json.png?branch=master)](https://travis-ci.org/mycozycloud/request-json)
+
 ## How it works
 
 with Javascript:
