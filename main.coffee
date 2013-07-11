@@ -49,7 +49,7 @@ class exports.JsonClient
 
 
     # Send a POST request to path with given JSON as body.
-    post: (path, json, callback) ->
+    post: (path, json, callback, parse = true) ->
         request
             method: "POST"
             uri: url.resolve(@host, path)
@@ -59,7 +59,8 @@ class exports.JsonClient
                 "user-agent": @agent
                 'x-auth-token': @token
             , (error, response, body) ->
-                parseBody error, response, body, callback
+                if parse then parseBody error, response, body, callback
+                else callback error, response, body
 
 
     # Send a PUT request to path with given JSON as body.
@@ -94,7 +95,7 @@ class exports.JsonClient
     sendFile: (path, filePath, data, callback) ->
         callback = data if typeof(data) is "function"
 
-        req = @post path, null, callback
+        req = @post path, null, callback, false #do not parse
         form = req.form()
         unless typeof(data) is "function"
             for att of data
