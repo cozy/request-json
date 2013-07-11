@@ -37,7 +37,7 @@ fakeUploadServer = (url, dir, callback= -> ) ->
     app.post url, (req, res) ->
         for key, file of req.files
             fs.renameSync file.path, dir + '/' + file.name
-        res.send 200, msg:'ok'
+        res.send 201
 
 
 describe "Common requests", ->
@@ -212,7 +212,7 @@ describe "Files", ->
         it "When I send post request to server", (done) ->
             @client.sendFile 'test-file', './README.md', (error, response, body) =>
                 should.not.exist error
-                response.statusCode.should.be.equal 200
+                response.statusCode.should.be.equal 201
                 done()
 
         it "Then I receive the correct file", ->
