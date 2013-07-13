@@ -30,7 +30,7 @@
   "devDependencies": {
     "coffee-script": "*",
     "express": "*",
-    "chai": "*"
+    "chai": "*",
     "mocha": "*"
   },
   "scripts": {
