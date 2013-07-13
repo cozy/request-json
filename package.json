@@ -33,7 +33,8 @@
     "chai": "*"
   },
   "scripts": {
-    "prepublish": "cake build"
+    "prepublish": "cake build",
+    "test": "cake tests"
   },
   "repository": {
     "type": "git",

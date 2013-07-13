@@ -6,9 +6,12 @@ task 'tests', 'run tests through mocha', ->
   command = "mocha tests.coffee --reporter spec "
   command += "--compilers coffee:coffee-script --colors"
   exec command, (err, stdout, stderr) ->
+    console.log stdout
     if err
       console.log "Running mocha caught exception: \n" + err
-    console.log stdout
+      process.exit 1
+    else
+      process.exit 0
 
 task "xunit", "", ->
   process.env.TZ = "Europe/Paris"
