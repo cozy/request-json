@@ -39,7 +39,7 @@ client.get('posts/', function(err, res, body) {
 data = {
   title: 'my new title'
 };
-client.put('posts/123/', function(err, res, body) {
+client.put('posts/123/', data, function(err, res, body) {
   return console.log(response.statusCode);
 });
 
@@ -62,7 +62,7 @@ client.get 'posts/', (err, res, body) ->
     console.log body.rows[0].title
 
 data = title: 'my new title'
-client.put 'posts/123/', (err, res, body) ->
+client.put 'posts/123/', data, (err, res, body) ->
     console.log response.statusCode
 
 client.del 'posts/123/', (err, res, body) ->
