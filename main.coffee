@@ -35,13 +35,10 @@ class exports.JsonClient
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback, parse = true) ->
-        header = {'accept': 'application/json'}
-        if @auth?
-            header["authorization"] = @auth
-        if @agent?
-            header["user-agent"] = @agent
-        if @token?
-            header["x-auth-token"] = @token
+        header = accept: 'application/json'
+        header["authorization"] = @auth if @auth?
+        header["user-agent"] = @agent if @agent?
+        header["x-auth-token"] = @token if @token?
         request
             method: 'GET'
             headers: header
