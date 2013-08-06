@@ -35,13 +35,16 @@ class exports.JsonClient
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback, parse = true) ->
+        header = {'accept': 'application/json'}
+        if @auth?
+            header["authorization"] = @auth
+        if @agent?
+            header["user-agent"] = @agent
+        if @token?
+            header["x-auth-token"] = @token
         request
             method: 'GET'
-            headers:
-                accept: 'application/json'
-                authorization: @auth
-                "user-agent": @agent
-                'x-auth-token': @token
+            headers: header
             uri: url.resolve(@host, path)
             , (error, response, body) ->
                 if parse then parseBody error, response, body, callback
