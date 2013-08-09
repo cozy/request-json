@@ -94,26 +94,26 @@ class exports.JsonClient
     # Use a read stream for that.
     sendFile: (path, files, data, callback) ->
         callback = data if typeof(data) is "function"
-        index = 0
         req = @post path, null, callback, false #do not parse
         form = req.form()
         unless typeof(data) is "function"
             for att of data
                 form.append att, data[att]
-        #files is a string so it is a file path
+        # files is a string so it is a file path
         if typeof files is "string"
-            form.append 'file', fs.createReadStream(files)
-				#files is not a string and is not an array so it is a stream
+            form.append "file", fs.createReadStream(files)
+				# files is not a string and is not an array so it is a stream
         else if not Array.isArray files
-            form.append 'file', files
-				#files is an array of strings and streams
+            form.append "file", files
+				# files is an array of strings and streams
         else
+            index = 0
             for file in files
                 index++
                 if typeof file is "string"
-                    form.append 'file' + index, fs.createReadStream(file)
+                    form.append "file#{index}", fs.createReadStream(file)
                 else
-                    form.append 'file' + index, file
+                    form.append "file#{index}", file
 
 
     # Retrieve file located at *path* and save it as *filePath*.
