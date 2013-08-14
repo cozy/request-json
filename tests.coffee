@@ -32,7 +32,7 @@ fakeDownloadServer = (url, path, callback= ->) ->
 
 fakeUploadServer = (url, dir, callback= -> ) ->
     app = express()
-    fs.mkdirSync dir
+    fs.mkdirSync dir unless fs.existsSync dir
     app.use express.bodyParser uploadDir: dir
     app.post url, (req, res) ->
         for key, file of req.files
@@ -193,31 +193,146 @@ describe "Files", ->
                 done()
 
         it "Then I receive the correct file", ->
-            fileStats = fs.statSync('./README.md')
-            resultStats = fs.statSync('./dl-README.md')
+            fileStats = fs.statSync './README.md'
+            resultStats = fs.statSync './dl-README.md'
             resultStats.size.should.equal fileStats.size
 
     describe "client.sendFile", ->
 
         before ->
-            @app = fakeUploadServer('/test-file', './up')
+            @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
             @client = new Client "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/README.md'
-            fs.rmdir './up'
+            fs.rmdirSync './up'
             @server.close()
 
         it "When I send post request to server", (done) ->
-            @client.sendFile 'test-file', './README.md', (error, response, body) =>
+            file = './README.md'
+            @client.sendFile 'test-file', file, (error, response, body) =>
                 should.not.exist error
                 response.statusCode.should.be.equal 201
                 done()
 
         it "Then I receive the correct file", ->
-            fileStats = fs.statSync('./README.md')
-            resultStats = fs.statSync('./up/README.md')
+            fileStats = fs.statSync './README.md'
+            resultStats = fs.statSync './up/README.md'
+            resultStats.size.should.equal fileStats.size
+
+    describe "client.sendFileFromStream", ->
+
+        before ->
+            @app = fakeUploadServer '/test-file', './up'
+            @server = @app.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            fs.unlinkSync './up/README.md'
+            fs.rmdirSync './up'
+            @server.close()
+
+        it "When I send post request to server", (done) ->
+            @file = fs.createReadStream './README.md'
+            @client.sendFile 'test-file', @file, (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 201
+                done()
+
+        it "Then I receive the correct file", ->
+            fileStats = fs.statSync './README.md'
+            resultStats = fs.statSync './up/README.md'
+            resultStats.size.should.equal fileStats.size
+
+
+    describe "client.sendManyFiles", ->
+
+        before ->
+            @app = fakeUploadServer '/test-file', './up'
+            @server = @app.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            fs.unlinkSync './up/README.md'
+            fs.unlinkSync './up/package.json'
+            fs.rmdirSync './up'
+            @server.close()
+
+        it "When I send post request to server", (done) ->
+            @file = './README.md'
+            @file2 = './package.json'
+            files = [@file, @file2]
+            @client.sendFile 'test-file', files, (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 201
+                done()
+
+        it "Then I receive the correct file", ->
+            fileStats = fs.statSync './README.md'
+            resultStats = fs.statSync './up/README.md'
+            resultStats.size.should.equal fileStats.size
+            fileStats = fs.statSync './package.json'
+            resultStats = fs.statSync './up/package.json'
+            resultStats.size.should.equal fileStats.size
+
+    describe "client.sendManyFilesMixingStreamAndPaths", ->
+
+        before ->
+            @app = fakeUploadServer '/test-file', './up'
+            @server = @app.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            fs.unlinkSync './up/README.md'
+            fs.unlinkSync './up/package.json'
+            fs.rmdirSync './up'
+            @server.close()
+
+        it "When I send post request to server", (done) ->
+            @file = './README.md'
+            @file2 = fs.createReadStream './package.json'
+            files = [@file, @file2]
+            @client.sendFile 'test-file', files, (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 201
+                done()
+
+        it "Then I receive the correct file", ->
+            fileStats = fs.statSync './README.md'
+            resultStats = fs.statSync './up/README.md'
+            resultStats.size.should.equal fileStats.size
+            fileStats = fs.statSync './package.json'
+            resultStats = fs.statSync './up/package.json'
+            resultStats.size.should.equal fileStats.size
+
+    describe "client.sendManyFilesFromStream", ->
+
+        before ->
+            @app = fakeUploadServer '/test-file', './up'
+            @server = @app.listen 8888
+            @client = new Client "http://localhost:8888/"
+
+        after ->
+            fs.unlinkSync './up/README.md'
+            fs.unlinkSync './up/package.json'
+            fs.rmdirSync './up'
+            @server.close()
+
+        it "When I send post request to server", (done) ->
+            @file = fs.createReadStream './README.md'
+            @file2 = fs.createReadStream './package.json'
+            @client.sendFile 'test-file', [@file, @file2], (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 201
+                done()
+
+        it "Then I receive the correct file", ->
+            fileStats = fs.statSync './README.md'
+            resultStats = fs.statSync './up/README.md'
+            resultStats.size.should.equal fileStats.size
+            fileStats = fs.statSync './package.json'
+            resultStats = fs.statSync './up/package.json'
             resultStats.size.should.equal fileStats.size
 
 describe "Basic authentication", ->
