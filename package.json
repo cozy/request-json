@@ -19,7 +19,14 @@
     "url": "https://github.com/mycozycloud/request-json/issues"
   },
   "author": "Cozy Cloud <contact@cozycloud.cc> (http://cozycloud.cc)",
-  "contributors": [],
+  "contributors": [
+    "Zoe Bellot", 
+    "Romain Foucault",
+    "Dario Kondratiuk",
+    "Frank Rousseau",
+    "Fábio Santos",
+    "Benjamin Woodruff"
+  ],
   "engines": {
     "node": "*"
   },
