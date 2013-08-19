@@ -13,14 +13,14 @@
       "url": "https://github.com/mycozycloud/request-json/blob/master/LICENSE"
     }
   ],
-  "version": "0.4.0",
+  "version": "0.4.1",
   "homepage": "https://github.com/mycozycloud/request-json/",
   "bugs": {
     "url": "https://github.com/mycozycloud/request-json/issues"
   },
   "author": "Cozy Cloud <contact@cozycloud.cc> (http://cozycloud.cc)",
   "contributors": [
-    "Zoe Bellot", 
+    "Zoe Bellot",
     "Romain Foucault",
     "Dario Kondratiuk",
     "Frank Rousseau",
