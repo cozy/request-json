@@ -21,8 +21,8 @@ Status](https://travis-ci.org/mycozycloud/request-json.png?branch=master)](https
 with Javascript:
 
 ```javascript
-var Client = require('request-json').JsonClient;
-var client = new Client('http://localhost:8888/');
+request = require('request-json');
+var client = request.newClient('http://localhost:8888/');
 
 var data = {
   title: 'my title',
@@ -51,8 +51,8 @@ client.del('posts/123/', function(err, res, body) {
 with Coffeescript:
 
 ```javascript
-Client = require('request-json').JsonClient
-client = new Client 'http://localhost:8888/'
+Client = require('request-json')
+client = request.newClient 'http://localhost:8888/'
 
 data = title: 'my title', content: 'my content'
 client.post 'posts/', data, (err, res, body) ->
@@ -102,6 +102,8 @@ client.saveFile 'attachments/test.png', './test-get.png', (err, res, body) ->
     console.log err if err
 ```
 
+sendFile supports too stream, array of files and array of streams to. Each file
+is stored with the key 'file + index' (file0, file1, file2...) in the request.
 
 
 ### Extra : basic authentication

@@ -14,6 +14,8 @@ parseBody =  (error, response, body, callback) ->
 
     callback error, response, parsed
 
+# Function to make request json more modular.
+exports.newClient = (url) -> new exports.JsonClient url
 
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient

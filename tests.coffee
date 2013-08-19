@@ -3,7 +3,7 @@ http = require "http"
 express = require "express"
 fs = require "fs"
 
-Client = require("./main").JsonClient
+request = require("./main")
 
 
 fakeServer = (json, code=200, callback=null) ->
@@ -49,7 +49,7 @@ describe "Common requests", ->
                 req.method.should.equal "GET"
                 req.url.should.equal  "/test-path/"
             @serverGet.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             @serverGet.close()
@@ -74,7 +74,7 @@ describe "Common requests", ->
                 req.method.should.equal "POST"
                 req.url.should.equal  "/test-path/"
             @serverPost.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             @serverPost.close()
@@ -101,7 +101,7 @@ describe "Common requests", ->
                 req.method.should.equal "PUT"
                 req.url.should.equal  "/test-path/123"
             @serverPut.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             @serverPut.close()
@@ -123,7 +123,7 @@ describe "Common requests", ->
                 req.method.should.equal "DELETE"
                 req.url.should.equal  "/test-path/123"
             @serverPut.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             @serverPut.close()
@@ -143,7 +143,7 @@ describe "Parsing edge cases", ->
         before ->
             @server = fakeServerRaw 204, ''
             @server.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             @server.close()
@@ -160,7 +160,7 @@ describe "Parsing edge cases", ->
         before ->
             @server = fakeServerRaw 200, '{"this:"isnotjson}'
             @server.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             @server.close()
@@ -179,7 +179,7 @@ describe "Files", ->
         before ->
             @app = fakeDownloadServer '/test-file', './README.md'
             @server = @app.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './dl-README.md'
@@ -202,7 +202,7 @@ describe "Files", ->
         before ->
             @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/README.md'
@@ -226,7 +226,7 @@ describe "Files", ->
         before ->
             @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/README.md'
@@ -251,7 +251,7 @@ describe "Files", ->
         before ->
             @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/README.md'
@@ -281,7 +281,7 @@ describe "Files", ->
         before ->
             @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/README.md'
@@ -311,7 +311,7 @@ describe "Files", ->
         before ->
             @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/README.md'
@@ -347,7 +347,7 @@ describe "Basic authentication", ->
                 req.method.should.equal "GET"
                 req.url.should.equal  "/test-path/"
             @serverGet.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             @serverGet.close()
@@ -376,7 +376,7 @@ describe "Set token", ->
                 req.method.should.equal "GET"
                 req.url.should.equal  "/test-path/"
             @serverGet.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             @serverGet.close()
@@ -403,7 +403,7 @@ describe "Set token", ->
                 req.method.should.equal "POST"
                 req.url.should.equal  "/test-path/"
             @serverPost.listen 8888
-            @client = new Client "http://localhost:8888/"
+            @client = request.newClient "http://localhost:8888/"
 
         after ->
             @serverPost.close()
