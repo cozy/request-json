@@ -102,8 +102,9 @@ client.saveFile 'attachments/test.png', './test-get.png', (err, res, body) ->
     console.log err if err
 ```
 
-sendFile supports too stream, array of files and array of streams to. Each file
-is stored with the key 'file + index' (file0, file1, file2...) in the request.
+sendFile can support file path, stream, array of file path and array of
+streams. Each file is stored with the key 'file + index' (file0, file1,
+file2...) in the request.
 
 
 ### Extra : basic authentication
