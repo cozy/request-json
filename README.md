@@ -104,7 +104,8 @@ client.saveFile 'attachments/test.png', './test-get.png', (err, res, body) ->
 
 sendFile can support file path, stream, array of file path and array of
 streams. Each file is stored with the key 'file + index' (file0, file1,
-file2...) in the request.
+file2...) in the request in case of array. For a single value, it is stored in
+the field with key 'file'.
 
 
 ### Extra : basic authentication
