@@ -51,7 +51,7 @@ client.del('posts/123/', function(err, res, body) {
 with Coffeescript:
 
 ```javascript
-Client = require('request-json')
+request = require('request-json')
 client = request.newClient 'http://localhost:8888/'
 
 data = title: 'my title', content: 'my content'
