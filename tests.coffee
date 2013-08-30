@@ -197,6 +197,30 @@ describe "Files", ->
             resultStats = fs.statSync './dl-README.md'
             resultStats.size.should.equal fileStats.size
 
+    describe "client.saveFileAsStream", ->
+
+        before ->
+            @app = fakeDownloadServer '/test-file', './README.md'
+            @server = @app.listen 8888
+            @client = request.newClient "http://localhost:8888/"
+
+        after ->
+            fs.unlinkSync './dl-README.md'
+            @server.close()
+
+        it "When I send get request to server", (done) ->
+            stream = @client.saveFileAsStream 'test-file', (err, res, body) =>
+                should.not.exist err
+                res.statusCode.should.be.equal 200
+                done()
+            stream.pipe fs.createWriteStream './dl-README.md'
+
+        it "Then I receive the correct file", ->
+            fileStats = fs.statSync './README.md'
+            resultStats = fs.statSync './dl-README.md'
+            resultStats.size.should.equal fileStats.size
+
+
     describe "client.sendFile", ->
 
         before ->

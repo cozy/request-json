@@ -121,5 +121,9 @@ class exports.JsonClient
     # Retrieve file located at *path* and save it as *filePath*.
     # Use a write stream for that.
     saveFile: (path, filePath, callback) ->
-        stream = @get path, callback, false #do not parse
+        stream = @get path, callback, false  # do not parse result
         stream.pipe fs.createWriteStream(filePath)
+
+    # Retrieve file located at *path* and return it as stream.
+    saveFileAsStream: (path, callback) ->
+        @get path, callback, false  # do not parse result
