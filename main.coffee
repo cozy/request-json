@@ -40,15 +40,15 @@ class exports.JsonClient
 
     # Add a token to request header.
     setToken: (token) ->
-        @headers["x-auth-token"] = @token
+        @headers["x-auth-token"] = token
 
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback, parse = true) ->
         request
             method: 'GET'
-            headers: @headers
             uri: url.resolve @host, path
+            headers: @headers
             , (error, response, body) ->
                 if parse then parseBody error, response, body, callback
                 else callback error, response, body
