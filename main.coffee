@@ -23,11 +23,13 @@ exports.newClient = (url) -> new exports.JsonClient url
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
 
+
     # Set default headers
     constructor: (@host) ->
         @headers =
             accept: 'application/json'
             "user-agent": "request-json/1.0"
+
 
     # Set basic authentication on each requests
     setBasicAuth: (username, password) ->
