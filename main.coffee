@@ -2,10 +2,13 @@ request = require "request"
 fs = require "fs"
 url = require "url"
 
+
+# Parse body assuming the body is a json object. Send an error if the body
+# can't be parsed.
 parseBody =  (error, response, body, callback) ->
     if typeof body is "string" and body isnt ""
         try
-            parsed = JSON.parse(body)
+            parsed = JSON.parse body
         catch err
             error ?= err
             parsed = body
@@ -20,31 +23,30 @@ exports.newClient = (url) -> new exports.JsonClient url
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
 
-    agent: "request-json/1.0"
-
+    # Set default headers
     constructor: (@host) ->
-
+        @headers =
+            accept: 'application/json'
+            "user-agent": "request-json/1.0"
 
     # Set basic authentication on each requests
     setBasicAuth: (username, password) ->
         credentials = "#{username}:#{password}"
         basicCredentials = new Buffer(credentials).toString('base64')
-        @auth = "Basic #{basicCredentials}"
+        @headers["authorization"] = "Basic #{basicCredentials}"
 
+
+    # Add a token to request header.
     setToken: (token) ->
-        @token = token
+        @headers["x-auth-token"] = @token
 
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback, parse = true) ->
-        header = accept: 'application/json'
-        header["authorization"] = @auth if @auth?
-        header["user-agent"] = @agent if @agent?
-        header["x-auth-token"] = @token if @token?
         request
             method: 'GET'
-            headers: header
-            uri: url.resolve(@host, path)
+            headers: @headers
+            uri: url.resolve @host, path
             , (error, response, body) ->
                 if parse then parseBody error, response, body, callback
                 else callback error, response, body
@@ -54,12 +56,9 @@ class exports.JsonClient
     post: (path, json, callback, parse = true) ->
         request
             method: "POST"
-            uri: url.resolve(@host, path)
+            uri: url.resolve @host, path
             json: json
-            headers:
-                authorization: @auth
-                "user-agent": @agent
-                'x-auth-token': @token
+            headers: @headers
             , (error, response, body) ->
                 if parse then parseBody error, response, body, callback
                 else callback error, response, body
@@ -69,12 +68,9 @@ class exports.JsonClient
     put: (path, json, callback) ->
         request
             method: "PUT"
-            uri: url.resolve(@host, path)
+            uri: url.resolve @host, path
             json: json
-            headers:
-                authorization: @auth
-                "user-agent": @agent
-                'x-auth-token': @token
+            headers: @headers
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
@@ -83,10 +79,8 @@ class exports.JsonClient
     del: (path, callback) ->
         request
             method: "DELETE"
-            uri: url.resolve(@host, path)
-            headers:
-                authorization: @auth
-                'x-auth-token': @token
+            uri: url.resolve @host, path
+            headers: @headers
             , (error, response, body) ->
                 parseBody error, response, body, callback
 
@@ -97,17 +91,21 @@ class exports.JsonClient
     sendFile: (path, files, data, callback) ->
         callback = data if typeof(data) is "function"
         req = @post path, null, callback, false #do not parse
+
         form = req.form()
         unless typeof(data) is "function"
             for att of data
                 form.append att, data[att]
+
         # files is a string so it is a file path
         if typeof files is "string"
-            form.append "file", fs.createReadStream(files)
-				# files is not a string and is not an array so it is a stream
+            form.append "file", fs.createReadStream files
+
+        # files is not a string and is not an array so it is a stream
         else if not Array.isArray files
             form.append "file", files
-				# files is an array of strings and streams
+
+        # files is an array of strings and streams
         else
             index = 0
             for file in files
@@ -123,6 +121,7 @@ class exports.JsonClient
     saveFile: (path, filePath, callback) ->
         stream = @get path, callback, false  # do not parse result
         stream.pipe fs.createWriteStream(filePath)
+
 
     # Retrieve file located at *path* and return it as stream.
     saveFileAsStream: (path, callback) ->
