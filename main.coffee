@@ -67,24 +67,26 @@ class exports.JsonClient
 
 
     # Send a PUT request to path with given JSON as body.
-    put: (path, json, callback) ->
+    put: (path, json, callback, parse = true) ->
         request
             method: "PUT"
             uri: url.resolve @host, path
             json: json
             headers: @headers
             , (error, response, body) ->
-                parseBody error, response, body, callback
+                if parse then parseBody error, response, body, callback
+                else callback error, response, body
 
 
     # Send a DELETE request to path.
-    del: (path, callback) ->
+    del: (path, callback, parse = true) ->
         request
             method: "DELETE"
             uri: url.resolve @host, path
             headers: @headers
             , (error, response, body) ->
-                parseBody error, response, body, callback
+                if parse then parseBody error, response, body, callback
+                else callback error, response, body
 
 
     # Send a post request with file located at given path as attachment
