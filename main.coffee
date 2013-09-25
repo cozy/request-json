@@ -10,7 +10,7 @@ parseBody =  (error, response, body, callback) ->
         try
             parsed = JSON.parse body
         catch err
-            error ?= err
+            error ?= new Error("Parsing error : #{err.message}, body= \n #{body}")
             parsed = body
 
     else parsed = body
