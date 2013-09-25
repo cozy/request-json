@@ -170,6 +170,7 @@ describe "Parsing edge cases", ->
                 should.exist error
                 should.exist body
                 body.should.be.equal '{"this:"isnotjson}'
+                error.message.should.have.string '{"this:"isnotjson}'
                 done()
 
 describe "Files", ->
