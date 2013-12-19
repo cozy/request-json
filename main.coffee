@@ -18,17 +18,17 @@ parseBody =  (error, response, body, callback) ->
     callback error, response, parsed
 
 # Function to make request json more modular.
-exports.newClient = (url) -> new exports.JsonClient url
+exports.newClient = (url, options = {}) -> new exports.JsonClient url, options
 
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
 
 
     # Set default headers
-    constructor: (@host) ->
-        @headers =
-            accept: 'application/json'
-            "user-agent": "request-json/1.0"
+    constructor: (@host, @options = {}) ->
+        @headers = @options.headers ? {}
+        @headers['accept'] = 'application/json'
+        @headers['user-agent'] = "request-json/1.0"
 
 
     # Set basic authentication on each requests
@@ -45,48 +45,53 @@ class exports.JsonClient
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback, parse = true) ->
-        request
-            method: 'GET'
-            uri: url.resolve @host, path
-            headers: @headers
-            , (error, response, body) ->
-                if parse then parseBody error, response, body, callback
-                else callback error, response, body
+        options = @options
+        options.method = 'GET'
+        options.uri = url.resolve @host, path
+        options.headers = @headers
+
+        request options, (error, response, body) ->
+            if parse then parseBody error, response, body, callback
+            else callback error, response, body
 
 
     # Send a POST request to path with given JSON as body.
     post: (path, json, callback, parse = true) ->
-        request
-            method: "POST"
-            uri: url.resolve @host, path
-            json: json
-            headers: @headers
-            , (error, response, body) ->
-                if parse then parseBody error, response, body, callback
-                else callback error, response, body
+        options = @options
+        options.method = "POST"
+        options.uri = url.resolve @host, path
+        options.json = json
+        options.headers = @headers
+
+        request options, (error, response, body) ->
+            if parse then parseBody error, response, body, callback
+            else callback error, response, body
 
 
     # Send a PUT request to path with given JSON as body.
     put: (path, json, callback, parse = true) ->
-        request
-            method: "PUT"
-            uri: url.resolve @host, path
-            json: json
-            headers: @headers
-            , (error, response, body) ->
-                if parse then parseBody error, response, body, callback
-                else callback error, response, body
+        options = @options
+        options.method = "PUT"
+        options.uri = url.resolve @host, path
+        options.json = json
+        options.headers = @headers
+
+        request options, (error, response, body) ->
+            if parse then parseBody error, response, body, callback
+            else callback error, response, body
 
 
     # Send a DELETE request to path.
     del: (path, callback, parse = true) ->
-        request
-            method: "DELETE"
-            uri: url.resolve @host, path
-            headers: @headers
-            , (error, response, body) ->
-                if parse then parseBody error, response, body, callback
-                else callback error, response, body
+        options = @options
+        options.method = "DELETE"
+        options.uri = url.resolve @host, path
+        options.json = json
+        options.headers = @headers
+
+        request options, (error, response, body) ->
+            if parse then parseBody error, response, body, callback
+            else callback error, response, body
 
 
     # Send a post request with file located at given path as attachment
