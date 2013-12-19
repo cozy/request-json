@@ -86,7 +86,6 @@ class exports.JsonClient
         options = @options
         options.method = "DELETE"
         options.uri = url.resolve @host, path
-        options.json = json
         options.headers = @headers
 
         request options, (error, response, body) ->
