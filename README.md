@@ -18,8 +18,6 @@ Status](https://travis-ci.org/mycozycloud/request-json.png?branch=master)](https
 
 ## How it works
 
-with Javascript:
-
 ```javascript
 request = require('request-json');
 var client = request.newClient('http://localhost:8888/');
@@ -48,30 +46,7 @@ client.del('posts/123/', function(err, res, body) {
 });
 ```
 
-with Coffeescript:
-
-```javascript
-request = require('request-json')
-client = request.newClient 'http://localhost:8888/'
-
-data = title: 'my title', content: 'my content'
-client.post 'posts/', data, (err, res, body) ->
-    console.log response.statusCode
-
-client.get 'posts/', (err, res, body) ->
-    console.log body.rows[0].title
-
-data = title: 'my new title'
-client.put 'posts/123/', data, (err, res, body) ->
-    console.log response.statusCode
-
-client.del 'posts/123/', (err, res, body) ->
-    console.log response.statusCode
-```
-
 ### Extra : files
-
-with Javascript:
 
 ```javascript
 data = {
@@ -91,17 +66,6 @@ client.saveFile('attachments/test.png', './test-get.png', function(err, res, bod
 
 ```
 
-with Coffeescript:
-
-```javascript
-data = name: "test"
-client.sendFile 'attachments/', './test.png', data, (err, res, body) ->
-    console.log err if err
-
-client.saveFile 'attachments/test.png', './test-get.png', (err, res, body) ->
-    console.log err if err
-```
-
 sendFile can support file path, stream, array of file path and array of
 streams. Each file is stored with the key 'file + index' (file0, file1,
 file2...) in the request in case of array. For a single value, it is stored in
@@ -109,8 +73,6 @@ the field with key 'file'.
 
 
 ### Extra : basic authentication
-
-with Javascript:
 
 ```javascript
 client.setBasicAuth('john', 'secret');
@@ -120,11 +82,11 @@ client.get('private/posts/', function(err, res, body) {
 
 ```
 
+## Who use it?
 
-with Coffeescript:
+request-json is downloaded more than 5000 times each month. Here are the
+company which use it for their API clients:
 
-```javascript
-client.setBasicAuth 'john', 'secret'
-client.get 'private/posts/', (err, res, body) ->
-    console.log body.rows[0].title
-```
+* [Cozy Cloud](http://cozy.io): Personal Cloud solutions
+* [Leank Kit](http://leankit.com/) Team Collaboration solutions
+* [Forecast](http://forecast.io/) Weather forecasting
