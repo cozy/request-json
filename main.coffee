@@ -1,4 +1,4 @@
-equest = require "request"
+request = require "request"
 fs = require "fs"
 url = require "url"
 
