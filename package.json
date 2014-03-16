@@ -3,6 +3,8 @@
   "description": "HTTP client for very simple usages and JSON requests only",
   "keywords": [
     "requests",
+    "request",
+    "api",
     "http",
     "json",
     "client"
