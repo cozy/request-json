@@ -35,7 +35,8 @@
   },
   "main": "./main.js",
   "dependencies": {
-    "request": "2.34.0"
+    "request": "2.34.0",
+    "aug": "0.1.0"
   },
   "devDependencies": {
     "coffee-script": "*",

@@ -138,7 +138,6 @@ describe "Common requests", ->
         it "Then I get 200 as answer", ->
             @response.statusCode.should.be.equal 200
 
-
     describe "client.del", ->
 
         before ->
@@ -152,6 +151,36 @@ describe "Common requests", ->
             @serverPut.close()
 
         it "When I send delete request to server", (done) ->
+            @client.del "test-path/123", (error, response, body) =>
+                @response = response
+                done()
+
+        it "Then I get 204 as answer", ->
+            @response.statusCode.should.be.equal 204
+
+    describe "client.put followed by client.del", ->
+
+        before ->
+            @client = request.newClient "http://localhost:8888/"
+
+        beforeEach ->
+            @serverPut = fakeServer msg:"ok", 204, (body, req) ->
+                if req.method == "PUT"
+                    should.exist body.putData
+                if req.method == "DELETE"
+                    should.not.exist body.putData
+                req.url.should.equal  "/test-path/123"
+            @serverPut.listen 8888
+
+        afterEach ->
+            @serverPut.close()
+
+        it "When I send put request to server", (done) ->
+            @client.put "test-path/123", putData: "data test", (error, response, body) =>
+                @response = response
+                done()
+
+        it "And then send delete request to server", (done) ->
             @client.del "test-path/123", (error, response, body) =>
                 @response = response
                 done()

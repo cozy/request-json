@@ -1,4 +1,5 @@
 request = require "request"
+aug = require "aug"
 fs = require "fs"
 url = require "url"
 
@@ -45,7 +46,7 @@ class exports.JsonClient
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback, parse = true) ->
-        options = @options
+        options = aug {}, @options
         options.method = 'GET'
         options.uri = url.resolve @host, path
         options.headers = @headers
@@ -57,7 +58,7 @@ class exports.JsonClient
 
     # Send a POST request to path with given JSON as body.
     post: (path, json, callback, parse = true) ->
-        options = @options
+        options = aug {}, @options
         options.method = "POST"
         options.uri = url.resolve @host, path
         options.json = json
@@ -70,7 +71,7 @@ class exports.JsonClient
 
     # Send a PUT request to path with given JSON as body.
     put: (path, json, callback, parse = true) ->
-        options = @options
+        options = aug {}, @options
         options.method = "PUT"
         options.uri = url.resolve @host, path
         options.json = json
@@ -96,7 +97,7 @@ class exports.JsonClient
 
     # Send a DELETE request to path.
     del: (path, callback, parse = true) ->
-        options = @options
+        options = aug {}, @options
         options.method = "DELETE"
         options.uri = url.resolve @host, path
         options.headers = @headers
