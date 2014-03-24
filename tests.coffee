@@ -81,7 +81,8 @@ describe "Common requests", ->
 
 
         it "When I send post request to server", (done) ->
-            @client.post "test-path/", postData: "data test", (error, response, body) =>
+            data = postData: "data test"
+            @client.post "test-path/", data, (error, response, body) =>
                 should.not.exist error
                 @response = response
                 @body = body
@@ -108,7 +109,8 @@ describe "Common requests", ->
 
 
         it "When I send put request to server", (done) ->
-            @client.put "test-path/123", putData: "data test", (error, response, body) =>
+            data = putData: "data test"
+            @client.put "test-path/123", data, (error, response, body) =>
                 @response = response
                 done()
 
@@ -131,7 +133,8 @@ describe "Common requests", ->
 
 
         it "When I send patch request to server", (done) ->
-            @client.patch "test-path/123", patchData: "data test", (error, response, body) =>
+            data = patchData: "data test"
+            @client.patch "test-path/123", data, (error, response, body) =>
                 @response = response
                 done()
 
@@ -174,7 +177,8 @@ describe "Common requests", ->
             @serverPut.close()
 
         it "When I send put request to server", (done) ->
-            @client.put "test-path/123", putData: "data test", (error, response, body) =>
+            data = putData: "data test"
+            @client.put "test-path/123", data, (error, response, body) =>
                 @response = response
                 done()
 
@@ -397,7 +401,8 @@ describe "Files", ->
         it "When I send post request to server", (done) ->
             @file = fs.createReadStream './README.md'
             @file2 = fs.createReadStream './package.json'
-            @client.sendFile 'test-file', [@file, @file2], (error, response, body) =>
+            files = [@file, @file2]
+            @client.sendFile 'test-file', files, (error, response, body) =>
                 should.not.exist error
                 response.statusCode.should.be.equal 201
                 done()
@@ -485,7 +490,8 @@ describe "Set token", ->
 
         it "When I send setToken request", (done) ->
             @client.setToken 'cozy'
-            @client.post "test-path/", postData:"data test", (error, response, body) =>
+            data = postData:"data test"
+            @client.post "test-path/", data, (error, response, body) =>
                 should.not.exist error
                 response.statusCode.should.be.equal 200
                 @body = body
