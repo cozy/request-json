@@ -44,6 +44,13 @@ client.put('posts/123/', data, function(err, res, body) {
 client.del('posts/123/', function(err, res, body) {
   return console.log(response.statusCode);
 });
+
+data = {
+  title: 'my patched title'
+};
+client.patch('posts/123/', data, function(err, res, body) {
+  return console.log(response.statusCode);
+});
 ```
 
 ### Extra : files
