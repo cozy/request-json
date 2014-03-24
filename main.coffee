@@ -87,7 +87,7 @@ class exports.JsonClient
 
     # Send a PATCH request to path with given JSON as body.
     patch: (path, json, callback, parse = true) ->
-        options = @options
+        options = clone @options
         options.method = "PATCH"
         options.uri = url.resolve @host, path
         options.json = json
