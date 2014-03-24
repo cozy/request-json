@@ -1,13 +1,15 @@
 {
   "name": "request-json",
-  "description": "HTTP client for very simple usages and JSON requests only",
+  "description": "HTTP request client for JSON APIs",
   "keywords": [
     "requests",
     "request",
     "api",
     "http",
     "json",
-    "client"
+    "client",
+    "simple",
+    "utility"
   ],
   "licenses": [
     {
