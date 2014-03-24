@@ -81,6 +81,19 @@ class exports.JsonClient
             else callback error, response, body
 
 
+    # Send a PATCH request to path with given JSON as body.
+    patch: (path, json, callback, parse = true) ->
+        options = @options
+        options.method = "PATCH"
+        options.uri = url.resolve @host, path
+        options.json = json
+        options.headers = @headers
+
+        request options, (error, response, body) ->
+            if parse then parseBody error, response, body, callback
+            else callback error, response, body
+
+
     # Send a DELETE request to path.
     del: (path, callback, parse = true) ->
         options = @options

@@ -116,6 +116,29 @@ describe "Common requests", ->
             @response.statusCode.should.be.equal 200
 
 
+    describe "client.patch", ->
+
+        before ->
+            @serverPatch = fakeServer msg:"ok", 200, (body, req) ->
+                should.exist body.patchData
+                req.method.should.equal "PATCH"
+                req.url.should.equal  "/test-path/123"
+            @serverPatch.listen 8888
+            @client = request.newClient "http://localhost:8888/"
+
+        after ->
+            @serverPatch.close()
+
+
+        it "When I send patch request to server", (done) ->
+            @client.patch "test-path/123", patchData: "data test", (error, response, body) =>
+                @response = response
+                done()
+
+        it "Then I get 200 as answer", ->
+            @response.statusCode.should.be.equal 200
+
+
     describe "client.del", ->
 
         before ->
