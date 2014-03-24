@@ -2,6 +2,10 @@ request = require "request"
 fs = require "fs"
 url = require "url"
 
+clone = (obj) ->
+    result = {}
+    result[key] = obj[key] for key of obj
+    result
 
 # Parse body assuming the body is a json object. Send an error if the body
 # can't be parsed.
@@ -45,7 +49,7 @@ class exports.JsonClient
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, callback, parse = true) ->
-        options = @options
+        options = clone @options
         options.method = 'GET'
         options.uri = url.resolve @host, path
         options.headers = @headers
@@ -57,7 +61,7 @@ class exports.JsonClient
 
     # Send a POST request to path with given JSON as body.
     post: (path, json, callback, parse = true) ->
-        options = @options
+        options = clone @options
         options.method = "POST"
         options.uri = url.resolve @host, path
         options.json = json
@@ -70,7 +74,7 @@ class exports.JsonClient
 
     # Send a PUT request to path with given JSON as body.
     put: (path, json, callback, parse = true) ->
-        options = @options
+        options = clone @options
         options.method = "PUT"
         options.uri = url.resolve @host, path
         options.json = json
@@ -83,7 +87,7 @@ class exports.JsonClient
 
     # Send a PATCH request to path with given JSON as body.
     patch: (path, json, callback, parse = true) ->
-        options = @options
+        options = clone @options
         options.method = "PATCH"
         options.uri = url.resolve @host, path
         options.json = json
@@ -96,7 +100,7 @@ class exports.JsonClient
 
     # Send a DELETE request to path.
     del: (path, callback, parse = true) ->
-        options = @options
+        options = clone @options
         options.method = "DELETE"
         options.uri = url.resolve @host, path
         options.headers = @headers
