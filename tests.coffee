@@ -162,17 +162,15 @@ describe "Common requests", ->
 
         before ->
             @client = request.newClient "http://localhost:8888/"
-
-        beforeEach ->
             @serverPut = fakeServer msg:"ok", 204, (body, req) ->
-                if req.method == "PUT"
+                if req.method is "PUT"
                     should.exist body.putData
-                if req.method == "DELETE"
+                if req.method is "DELETE"
                     should.not.exist body.putData
                 req.url.should.equal  "/test-path/123"
             @serverPut.listen 8888
 
-        afterEach ->
+        after ->
             @serverPut.close()
 
         it "When I send put request to server", (done) ->
