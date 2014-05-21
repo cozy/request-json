@@ -89,7 +89,7 @@ client.get('private/posts/', function(err, res, body) {
 
 ```
 
-## Who use it?
+## Who uses it
 
 request-json is downloaded more than 2000 times each month. Here are the
 companies which use it for their API clients:
