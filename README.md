@@ -2,12 +2,12 @@
 
 [Request](https://github.com/mikeal/request) is a great HTTP client for NodeJS,
 but if you deal only with JSON, things could be more straightforward. This lib
-aims to simplify Request usage for 
+aims to simplify Request usage for
 JSON only requests.
 
 ## Install
 
-Add it to your package.json file or run in your project folder: 
+Add it to your package.json file or run in your project folder:
 
     npm install request-json
 
@@ -73,10 +73,11 @@ client.saveFile('attachments/test.png', './test-get.png', function(err, res, bod
 
 ```
 
-sendFile can support file path, stream, array of file path and array of
+`sendFile` can support file path, stream, array of file path and array of
 streams. Each file is stored with the key 'file + index' (file0, file1,
 file2...) in the request in case of array. For a single value, it is stored in
 the field with key 'file'.
+If you use a stream, it must have a "path" attribute containing its path or filename.
 
 
 ### Extra : basic authentication

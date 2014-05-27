@@ -113,6 +113,8 @@ class exports.JsonClient
     # Send a post request with file located at given path as attachment
     # (multipart form)
     # Use a read stream for that.
+    # If you use a stream, it must have a "path" attribute...
+    # ...with its path or filename
     sendFile: (path, files, data, callback) ->
         callback = data if typeof(data) is "function"
         req = @post path, null, callback, false #do not parse
