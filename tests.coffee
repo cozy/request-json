@@ -2,7 +2,8 @@ should = require('chai').Should()
 http = require "http"
 express = require "express"
 fs = require "fs"
-
+bodyParser = require 'body-parser'
+multiparty = require 'connect-multiparty'
 request = require("./main")
 
 
@@ -33,7 +34,8 @@ fakeDownloadServer = (url, path, callback= ->) ->
 fakeUploadServer = (url, dir, callback= -> ) ->
     app = express()
     fs.mkdirSync dir unless fs.existsSync dir
-    app.use express.bodyParser uploadDir: dir
+    app.use bodyParser()
+    app.use multiparty uploadDir: dir
     app.post url, (req, res) ->
         for key, file of req.files
             fs.renameSync file.path, dir + '/' + file.name
