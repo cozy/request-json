@@ -502,3 +502,30 @@ describe "Set token", ->
         it "Then I get msg: ok as answer.", ->
             should.exist @body.msg
             @body.msg.should.equal "ok"
+
+describe "Set header on request", ->
+
+    before ->
+        @serverReq = fakeServer msg:"ok", 200, (body, req) ->
+            contentType = req.headers['content-type']
+            contentType.should.equal 'application/json-patch+json'
+            req.method.should.equal 'PATCH'
+            req.url.should.equal  "/test-path/"
+        @serverReq.listen 8888
+        @client = request.newClient "http://localhost:8888/"
+
+    after ->
+        @serverReq.close()
+
+    it "When I send a patch with a custom content type", (done) ->
+        options = { headers: {} }
+        options.headers['content-type'] = 'application/json-patch+json'
+        @client.patch "test-path/", {}, options, (error, response, body) =>
+            should.not.exist error
+            response.statusCode.should.be.equal 200
+            @body = body
+            done()
+
+    it "Then I get msg: ok as answer.", ->
+        should.exist @body.msg
+        @body.msg.should.equal "ok"
