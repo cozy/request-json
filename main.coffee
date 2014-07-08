@@ -7,6 +7,19 @@ clone = (obj) ->
     result[key] = obj[key] for key of obj
     result
 
+merge = (obj1, obj2) ->
+    result = clone(obj1)
+    if obj2 != null
+        result[key] = obj2[key] for key of obj2
+    result
+
+buildOptions = (clientOptions, clientHeaders, host, path, requestOptions) ->
+    options = merge clientOptions, requestOptions
+    options.uri = url.resolve host, path
+    options.headers = if requestOptions and requestOptions.headers then merge clientHeaders, requestOptions.headers else clientHeaders
+    options
+
+
 # Parse body assuming the body is a json object. Send an error if the body
 # can't be parsed.
 parseBody =  (error, response, body, callback) ->
@@ -48,64 +61,69 @@ class exports.JsonClient
 
 
     # Send a GET request to path. Parse response body to obtain a JS object.
-    get: (path, callback, parse = true) ->
-        options = clone @options
-        options.method = 'GET'
-        options.uri = url.resolve @host, path
-        options.headers = @headers
+    get: (path, options, callback, parse = true) ->
+        if typeof options is 'function'
+            callback = options
+            options = {}
+        opts = buildOptions @options, @headers, @host, path, options
+        opts.method = 'GET'
 
-        request options, (error, response, body) ->
+        request opts, (error, response, body) ->
             if parse then parseBody error, response, body, callback
             else callback error, response, body
 
 
     # Send a POST request to path with given JSON as body.
-    post: (path, json, callback, parse = true) ->
-        options = clone @options
-        options.method = "POST"
-        options.uri = url.resolve @host, path
-        options.json = json
-        options.headers = @headers
+    post: (path, json, options, callback, parse = true) ->
+        if typeof options is 'function'
+            callback = options
+            options = {}
+        opts = buildOptions @options, @headers, @host, path, options
+        opts.method = "POST"
+        opts.json = json
 
-        request options, (error, response, body) ->
+        request opts, (error, response, body) ->
             if parse then parseBody error, response, body, callback
             else callback error, response, body
 
 
     # Send a PUT request to path with given JSON as body.
-    put: (path, json, callback, parse = true) ->
-        options = clone @options
-        options.method = "PUT"
-        options.uri = url.resolve @host, path
-        options.json = json
-        options.headers = @headers
+    put: (path, json, options, callback, parse = true) ->
+        if typeof options is 'function'
+            callback = options
+            options = {}
+        opts = buildOptions @options, @headers, @host, path, options
+        opts.method = "PUT"
+        opts.json = json
 
-        request options, (error, response, body) ->
+        request opts, (error, response, body) ->
             if parse then parseBody error, response, body, callback
             else callback error, response, body
 
 
     # Send a PATCH request to path with given JSON as body.
-    patch: (path, json, callback, parse = true) ->
-        options = clone @options
-        options.method = "PATCH"
-        options.uri = url.resolve @host, path
-        options.json = json
-        options.headers = @headers
+    patch: (path, json, options, callback, parse = true) ->
+        if typeof options is 'function'
+            callback = options
+            options = {}
+        opts = buildOptions @options, @headers, @host, path, options
+        opts.method = "PATCH"
+        opts.json = json
 
-        request options, (error, response, body) ->
+        request opts, (error, response, body) ->
             if parse then parseBody error, response, body, callback
             else callback error, response, body
 
 
     # Send a DELETE request to path.
     del: (path, callback, parse = true) ->
-        options = clone @options
-        options.method = "DELETE"
-        options.uri = url.resolve @host, path
-        options.headers = @headers
+        if typeof options is 'function'
+            callback = options
+            options = {}
+        opts = buildOptions @options, @headers, @host, path, options
+        opts.method = "DELETE"
 
-        request options, (error, response, body) ->
+        request opts, (error, response, body) ->
             if parse then parseBody error, response, body, callback
             else callback error, response, body
 
@@ -117,7 +135,7 @@ class exports.JsonClient
     # ...with its path or filename
     sendFile: (path, files, data, callback) ->
         callback = data if typeof(data) is "function"
-        req = @post path, null, callback, false #do not parse
+        req = @post path, null, {}, callback, false #do not parse
 
         form = req.form()
         unless typeof(data) is "function"
@@ -146,10 +164,10 @@ class exports.JsonClient
     # Retrieve file located at *path* and save it as *filePath*.
     # Use a write stream for that.
     saveFile: (path, filePath, callback) ->
-        stream = @get path, callback, false  # do not parse result
+        stream = @get path, {}, callback, false  # do not parse result
         stream.pipe fs.createWriteStream(filePath)
 
 
     # Retrieve file located at *path* and return it as stream.
     saveFileAsStream: (path, callback) ->
-        @get path, callback, false  # do not parse result
+        @get path, {}, callback, false  # do not parse result
