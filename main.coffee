@@ -63,6 +63,7 @@ class exports.JsonClient
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, options, callback, parse = true) ->
         if typeof options is 'function'
+            parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
         opts = buildOptions @options, @headers, @host, path, options
@@ -76,6 +77,7 @@ class exports.JsonClient
     # Send a POST request to path with given JSON as body.
     post: (path, json, options, callback, parse = true) ->
         if typeof options is 'function'
+            parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
         opts = buildOptions @options, @headers, @host, path, options
@@ -90,6 +92,7 @@ class exports.JsonClient
     # Send a PUT request to path with given JSON as body.
     put: (path, json, options, callback, parse = true) ->
         if typeof options is 'function'
+            parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
         opts = buildOptions @options, @headers, @host, path, options
@@ -104,6 +107,7 @@ class exports.JsonClient
     # Send a PATCH request to path with given JSON as body.
     patch: (path, json, options, callback, parse = true) ->
         if typeof options is 'function'
+            parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
         opts = buildOptions @options, @headers, @host, path, options
@@ -118,6 +122,7 @@ class exports.JsonClient
     # Send a DELETE request to path.
     del: (path, callback, parse = true) ->
         if typeof options is 'function'
+            parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
         opts = buildOptions @options, @headers, @host, path, options
@@ -135,7 +140,7 @@ class exports.JsonClient
     # ...with its path or filename
     sendFile: (path, files, data, callback) ->
         callback = data if typeof(data) is "function"
-        req = @post path, null, {}, callback, false #do not parse
+        req = @post path, null, callback, false #do not parse
 
         form = req.form()
         unless typeof(data) is "function"
@@ -164,10 +169,10 @@ class exports.JsonClient
     # Retrieve file located at *path* and save it as *filePath*.
     # Use a write stream for that.
     saveFile: (path, filePath, callback) ->
-        stream = @get path, {}, callback, false  # do not parse result
+        stream = @get path, callback, false  # do not parse result
         stream.pipe fs.createWriteStream(filePath)
 
 
     # Retrieve file located at *path* and return it as stream.
     saveFileAsStream: (path, callback) ->
-        @get path, {}, callback, false  # do not parse result
+        @get path, callback, false  # do not parse result
