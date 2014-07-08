@@ -96,6 +96,6 @@ request-json is downloaded more than 2000 times each month. Here are the
 companies which use it for their API clients:
 
 * [Cozy Cloud](http://cozy.io) Personal Cloud Solutions
-* [Leank Kit](http://leankit.com/) Team Collaboration Solutions
+* [LeanKit](http://leankit.com/) Team Collaboration Solutions
 * [Forecast](http://forecast.io/) Weather Forecasting
 * [JS Report](http://jsreport.net/) Reporting Platform
