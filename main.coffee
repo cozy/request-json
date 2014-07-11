@@ -9,14 +9,20 @@ clone = (obj) ->
 
 merge = (obj1, obj2) ->
     result = clone(obj1)
-    if obj2 != null
+    if obj2?
         result[key] = obj2[key] for key of obj2
     result
 
 buildOptions = (clientOptions, clientHeaders, host, path, requestOptions) ->
-    options = merge clientOptions, requestOptions
+    # Check if there is something to merge before performing additional
+    # operation
+    if requestOptions isnt {}
+        options = merge clientOptions, requestOptions
+    if requestOptions? and requestOptions isnt {} and requestOptions.headers
+        options.headers = merge clientHeaders, requestOptions.headers
+    else
+        options.headers = clientHeaders
     options.uri = url.resolve host, path
-    options.headers = if requestOptions and requestOptions.headers then merge clientHeaders, requestOptions.headers else clientHeaders
     options
 
 
