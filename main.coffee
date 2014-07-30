@@ -1,6 +1,7 @@
 request = require "request"
 fs = require "fs"
 url = require "url"
+http = require 'http'
 
 clone = (obj) ->
     result = {}
@@ -13,6 +14,7 @@ merge = (obj1, obj2) ->
         result[key] = obj2[key] for key of obj2
     result
 
+
 buildOptions = (clientOptions, clientHeaders, host, path, requestOptions) ->
     # Check if there is something to merge before performing additional
     # operation
@@ -24,6 +26,22 @@ buildOptions = (clientOptions, clientHeaders, host, path, requestOptions) ->
         options.headers = clientHeaders
     options.uri = url.resolve host, path
     options
+
+
+playReq = (opts, data, callback) ->
+    body = ''
+    req = http.request opts, (res) ->
+        res.setEncoding 'utf8'
+        res.on 'data', (chunk) ->
+            body += chunk
+
+        res.on 'end', ->
+            parseBody null, res, body, callback
+
+    req.on 'error', (err) ->
+        callback err
+
+    req.end()
 
 
 # Parse body assuming the body is a json object. Send an error if the body
@@ -42,6 +60,7 @@ parseBody =  (error, response, body, callback) ->
 
 # Function to make request json more modular.
 exports.newClient = (url, options = {}) -> new exports.JsonClient url, options
+
 
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
@@ -127,17 +146,21 @@ class exports.JsonClient
 
     # Send a DELETE request to path.
     del: (path, callback, parse = true) ->
+        urlData = url.parse @host
+        @options.host = urlData.host.split(':')[0]
+        @options.port = urlData.port
+
         if typeof options is 'function'
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
         opts = buildOptions @options, @headers, @host, path, options
         opts.method = "DELETE"
+        path = "/#{path}" if path[0] isnt '/'
+        opts.path = path
+        console.log opts
 
-        request opts, (error, response, body) ->
-            if parse then parseBody error, response, body, callback
-            else callback error, response, body
-
+        playRequest opts, null, callback
 
     # Send a post request with file located at given path as attachment
     # (multipart form)
