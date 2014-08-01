@@ -3,10 +3,12 @@ fs = require "fs"
 url = require "url"
 http = require 'http'
 
+
 clone = (obj) ->
     result = {}
     result[key] = obj[key] for key of obj
     result
+
 
 merge = (obj1, obj2) ->
     result = clone(obj1)
@@ -16,6 +18,7 @@ merge = (obj1, obj2) ->
 
 
 buildOptions = (clientOptions, clientHeaders, host, path, requestOptions) ->
+
     # Check if there is something to merge before performing additional
     # operation
     if requestOptions isnt {}
@@ -25,23 +28,10 @@ buildOptions = (clientOptions, clientHeaders, host, path, requestOptions) ->
     else
         options.headers = clientHeaders
     options.uri = url.resolve host, path
+    path = "/#{path}" if path[0] isnt '/'
+    options.path = path
     options
 
-
-playReq = (opts, data, callback) ->
-    body = ''
-    req = http.request opts, (res) ->
-        res.setEncoding 'utf8'
-        res.on 'data', (chunk) ->
-            body += chunk
-
-        res.on 'end', ->
-            parseBody null, res, body, callback
-
-    req.on 'error', (err) ->
-        callback err
-
-    req.end()
 
 
 # Parse body assuming the body is a json object. Send an error if the body
@@ -58,8 +48,44 @@ parseBody =  (error, response, body, callback) ->
 
     callback error, response, parsed
 
+
+playRequest = (opts, data, callback) ->
+    req = http.request opts, (res) ->
+        res.setEncoding 'utf8'
+
+        body = ''
+        res.on 'data', (chunk) -> body += chunk
+        res.on 'end', ->
+            parseBody null, res, body, callback
+
+    req.on 'error', (err) ->
+        callback err
+
+    req.write JSON.stringify data if data?
+    req.end()
+
+
 # Function to make request json more modular.
-exports.newClient = (url, options = {}) -> new exports.JsonClient url, options
+module.exports =
+
+
+    newClient: (url, options = {}) -> new exports.JsonClient url, options
+
+
+    get: (opts, data, callback) ->
+        opts.method = "GET"
+        playRequest opts, data, callback
+
+
+    del: (opts, data, callback) ->
+        opts.method = "DELETE"
+        playRequest opts, data, callback
+
+
+    post: (opts, data, callback) ->
+        opts.method = "POST"
+        console.log opts
+        playRequest opts, data, callback
 
 
 # Small HTTP client for easy json interactions with Cozy backends.
@@ -87,31 +113,28 @@ class exports.JsonClient
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, options, callback, parse = true) ->
+        urlData = url.parse @host
+        @options.host = urlData.host.split(':')[0]
+        @options.port = urlData.port
+
         if typeof options is 'function'
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
         opts = buildOptions @options, @headers, @host, path, options
-        opts.method = 'GET'
 
-        request opts, (error, response, body) ->
-            if parse then parseBody error, response, body, callback
-            else callback error, response, body
+        module.exports.get opts, null, callback
 
 
     # Send a POST request to path with given JSON as body.
-    post: (path, json, options, callback, parse = true) ->
+    post: (path, data, options, callback, parse = true) ->
         if typeof options is 'function'
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
         opts = buildOptions @options, @headers, @host, path, options
-        opts.method = "POST"
-        opts.json = json
 
-        request opts, (error, response, body) ->
-            if parse then parseBody error, response, body, callback
-            else callback error, response, body
+        module.exports.post opts, data, callback
 
 
     # Send a PUT request to path with given JSON as body.
@@ -154,13 +177,10 @@ class exports.JsonClient
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = buildOptions @options, @headers, @host, path, options
-        opts.method = "DELETE"
-        path = "/#{path}" if path[0] isnt '/'
-        opts.path = path
-        console.log opts
 
-        playRequest opts, null, callback
+        opts = buildOptions @options, @headers, @host, path, options
+
+        module.exports.del opts, null, callback
 
     # Send a post request with file located at given path as attachment
     # (multipart form)
