@@ -39,7 +39,7 @@ fakeUploadServer = (url, dir, callback= -> ) ->
     app.post url, (req, res) ->
         for key, file of req.files
             fs.renameSync file.path, dir + '/' + file.name
-        res.send 201
+        res.send 201, creation: true
 
 
 describe "Common requests", ->
@@ -80,7 +80,6 @@ describe "Common requests", ->
 
         after ->
             @serverPost.close()
-
 
         it "When I send post request to server", (done) ->
             data = postData: "data test"
@@ -266,11 +265,12 @@ describe "Files", ->
             @server.close()
 
         it "When I send get request to server", (done) ->
-            stream = @client.saveFileAsStream 'test-file', (err, res, body) =>
+            @client.saveFileAsStream 'test-file', (err, stream) =>
                 should.not.exist err
-                res.statusCode.should.be.equal 200
-                done()
-            stream.pipe fs.createWriteStream './dl-README.md'
+                stream.statusCode.should.be.equal 200
+                stream.pipe fs.createWriteStream './dl-README.md'
+                stream.on 'end', ->
+                    done()
 
         it "Then I receive the correct file", ->
             fileStats = fs.statSync './README.md'

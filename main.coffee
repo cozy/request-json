@@ -1,4 +1,4 @@
-request = require "request"
+FormData = require "form-data"
 fs = require "fs"
 url = require "url"
 http = require 'http'
@@ -18,7 +18,6 @@ merge = (obj1, obj2) ->
 
 
 buildOptions = (clientOptions, clientHeaders, host, path, requestOptions) ->
-
     # Check if there is something to merge before performing additional
     # operation
     if requestOptions isnt {}
@@ -27,9 +26,15 @@ buildOptions = (clientOptions, clientHeaders, host, path, requestOptions) ->
         options.headers = merge clientHeaders, requestOptions.headers
     else
         options.headers = clientHeaders
+
+    urlData = url.parse host
+    options.host = urlData.host.split(':')[0]
+    options.port = urlData.port
+
     options.uri = url.resolve host, path
     path = "/#{path}" if path[0] isnt '/'
     options.path = path
+
     options
 
 
@@ -84,7 +89,16 @@ module.exports =
 
     post: (opts, data, callback) ->
         opts.method = "POST"
-        console.log opts
+        playRequest opts, data, callback
+
+
+    put: (opts, data, callback) ->
+        opts.method = "PUT"
+        playRequest opts, data, callback
+
+
+    patch: (opts, data, callback) ->
+        opts.method = "PATCH"
         playRequest opts, data, callback
 
 
@@ -113,16 +127,12 @@ class exports.JsonClient
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, options, callback, parse = true) ->
-        urlData = url.parse @host
-        @options.host = urlData.host.split(':')[0]
-        @options.port = urlData.port
-
         if typeof options is 'function'
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = buildOptions @options, @headers, @host, path, options
 
+        opts = buildOptions @options, @headers, @host, path, options
         module.exports.get opts, null, callback
 
 
@@ -132,66 +142,54 @@ class exports.JsonClient
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = buildOptions @options, @headers, @host, path, options
 
+        opts = buildOptions @options, @headers, @host, path, options
         module.exports.post opts, data, callback
 
 
     # Send a PUT request to path with given JSON as body.
-    put: (path, json, options, callback, parse = true) ->
+    put: (path, data, options, callback, parse = true) ->
         if typeof options is 'function'
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = buildOptions @options, @headers, @host, path, options
-        opts.method = "PUT"
-        opts.json = json
 
-        request opts, (error, response, body) ->
-            if parse then parseBody error, response, body, callback
-            else callback error, response, body
+        opts = buildOptions @options, @headers, @host, path, options
+        module.exports.put opts, data, callback
 
 
     # Send a PATCH request to path with given JSON as body.
-    patch: (path, json, options, callback, parse = true) ->
+    patch: (path, data, options, callback, parse = true) ->
         if typeof options is 'function'
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = buildOptions @options, @headers, @host, path, options
-        opts.method = "PATCH"
-        opts.json = json
 
-        request opts, (error, response, body) ->
-            if parse then parseBody error, response, body, callback
-            else callback error, response, body
+        opts = buildOptions @options, @headers, @host, path, options
+        module.exports.patch opts, data, callback
 
 
     # Send a DELETE request to path.
-    del: (path, callback, parse = true) ->
-        urlData = url.parse @host
-        @options.host = urlData.host.split(':')[0]
-        @options.port = urlData.port
-
+    del: (path, options, callback, parse = true) ->
         if typeof options is 'function'
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
 
         opts = buildOptions @options, @headers, @host, path, options
-
         module.exports.del opts, null, callback
+
 
     # Send a post request with file located at given path as attachment
     # (multipart form)
     # Use a read stream for that.
     # If you use a stream, it must have a "path" attribute...
     # ...with its path or filename
-    sendFile: (path, files, data, callback) ->
+    sendFile: (path, files, data, callback, parse=true) ->
         callback = data if typeof(data) is "function"
-        req = @post path, null, callback, false #do not parse
 
-        form = req.form()
+        form = new FormData()
+
         unless typeof(data) is "function"
             for att of data
                 form.append att, data[att]
@@ -214,14 +212,46 @@ class exports.JsonClient
                 else
                     form.append "file#{index}", file
 
+        form.submit @host + path, (err, res) ->
+            res.setEncoding 'utf8'
+
+            body = ''
+            res.on 'data', (chunk) -> body += chunk
+            res.on 'end', ->
+                parseBody null, res, body, callback, parse
+
 
     # Retrieve file located at *path* and save it as *filePath*.
     # Use a write stream for that.
     saveFile: (path, filePath, callback) ->
-        stream = @get path, callback, false  # do not parse result
-        stream.pipe fs.createWriteStream(filePath)
+        options = {}
+        opts = buildOptions @options, @headers, @host, path, options
+        opts.option = "GET"
+
+        req = http.request opts, (res) ->
+            res.pipe fs.createWriteStream filePath
+
+            res.on 'end', ->
+                callback null, res
+
+        req.on 'error', (err)  ->
+            callback err
+
+        req.end()
 
 
     # Retrieve file located at *path* and return it as stream.
     saveFileAsStream: (path, callback) ->
-        @get path, callback, false  # do not parse result
+        options = {}
+        opts = buildOptions @options, @headers, @host, path, options
+        opts.option = "GET"
+
+        req = http.request opts, (res) ->
+            callback null, res
+
+        req.on 'error', (err)  ->
+            callback err
+
+        req.end()
+
+
