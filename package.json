@@ -39,7 +39,7 @@
   },
   "main": "./main.js",
   "dependencies": {
-    "request": "2.34.0"
+    "form-data": "0.1.0"
   },
   "devDependencies": {
     "coffee-script": "1.7.1",

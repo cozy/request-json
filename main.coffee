@@ -4,12 +4,15 @@ url = require "url"
 http = require 'http'
 
 
+# Create a new object from the first one.
 clone = (obj) ->
     result = {}
     result[key] = obj[key] for key of obj
     result
 
 
+# Merge two objects in one. Values from the second object win over the first
+# one.
 merge = (obj1, obj2) ->
     result = clone(obj1)
     if obj2?
@@ -17,26 +20,33 @@ merge = (obj1, obj2) ->
     result
 
 
+
+# Build parameters required by http lib from options set on the client
+# and extra options given for the request.
 buildOptions = (clientOptions, clientHeaders, host, path, requestOptions) ->
+
     # Check if there is something to merge before performing additional
     # operation
     if requestOptions isnt {}
         options = merge clientOptions, requestOptions
+
+    # Check if there are headers to merge before performing additional
+    # operation on headers
     if requestOptions? and requestOptions isnt {} and requestOptions.headers
         options.headers = merge clientHeaders, requestOptions.headers
+
+    # If no additional headers are given, it uses the client headers directly.
     else
         options.headers = clientHeaders
 
+    # Buuld host parameters from given URL.
+    path = "/#{path}" if path[0] isnt '/'
     urlData = url.parse host
     options.host = urlData.host.split(':')[0]
     options.port = urlData.port
-
-    options.uri = url.resolve host, path
-    path = "/#{path}" if path[0] isnt '/'
     options.path = path
 
     options
-
 
 
 # Parse body assuming the body is a json object. Send an error if the body
@@ -54,6 +64,7 @@ parseBody =  (error, response, body, callback) ->
     callback error, response, parsed
 
 
+# Generic command to play a simple request (withou streaming or form).
 playRequest = (opts, data, callback) ->
     req = http.request opts, (res) ->
         res.setEncoding 'utf8'
@@ -74,7 +85,8 @@ playRequest = (opts, data, callback) ->
 module.exports =
 
 
-    newClient: (url, options = {}) -> new exports.JsonClient url, options
+    newClient: (url, options = {}) ->
+        new exports.JsonClient url, options
 
 
     get: (opts, data, callback) ->
@@ -182,14 +194,12 @@ class exports.JsonClient
 
     # Send a post request with file located at given path as attachment
     # (multipart form)
-    # Use a read stream for that.
-    # If you use a stream, it must have a "path" attribute...
-    # ...with its path or filename
     sendFile: (path, files, data, callback, parse=true) ->
         callback = data if typeof(data) is "function"
 
         form = new FormData()
 
+        # Append fields to form.
         unless typeof(data) is "function"
             for att of data
                 form.append att, data[att]
@@ -212,11 +222,14 @@ class exports.JsonClient
                 else
                     form.append "file#{index}", file
 
-        form.submit @host + path, (err, res) ->
+        form.submit url.resolve(@host, path), (err, res) ->
             res.setEncoding 'utf8'
 
             body = ''
-            res.on 'data', (chunk) -> body += chunk
+
+            res.on 'data', (chunk) ->
+                body += chunk
+
             res.on 'end', ->
                 parseBody null, res, body, callback, parse
 
@@ -253,5 +266,3 @@ class exports.JsonClient
             callback err
 
         req.end()
-
-
