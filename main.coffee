@@ -4,21 +4,14 @@ url = require "url"
 http = require 'http'
 
 
-# Create a new object from the first one.
-clone = (obj) ->
-    result = {}
-    result[key] = obj[key] for key of obj
-    result
-
-
 # Merge two objects in one. Values from the second object win over the first
 # one.
 merge = (obj1, obj2) ->
-    result = clone(obj1)
+    result = {}
+    result[key] = obj1[key] for key of obj1
     if obj2?
         result[key] = obj2[key] for key of obj2
     result
-
 
 
 # Build parameters required by http lib from options set on the client
@@ -66,6 +59,14 @@ parseBody =  (error, response, body, callback) ->
 
 # Generic command to play a simple request (withou streaming or form).
 playRequest = (opts, data, callback) ->
+
+    if typeof data is 'function'
+        callback = data
+        data = {}
+
+    if data?
+        opts.headers['content-size'] = data.length
+
     req = http.request opts, (res) ->
         res.setEncoding 'utf8'
 
@@ -86,7 +87,7 @@ module.exports =
 
 
     newClient: (url, options = {}) ->
-        new exports.JsonClient url, options
+        new JsonClient url, options
 
 
     get: (opts, data, callback) ->
@@ -115,7 +116,7 @@ module.exports =
 
 
 # Small HTTP client for easy json interactions with Cozy backends.
-class exports.JsonClient
+class JsonClient
 
 
     # Set default headers
@@ -123,6 +124,7 @@ class exports.JsonClient
         @headers = @options.headers ? {}
         @headers['accept'] = 'application/json'
         @headers['user-agent'] = "request-json/1.0"
+        @headers['content-type'] = 'application/json'
 
 
     # Set basic authentication on each requests
@@ -153,6 +155,12 @@ class exports.JsonClient
         if typeof options is 'function'
             parse = callback if typeof callback is 'boolean'
             callback = options
+            options = {}
+
+        if typeof options is 'function'
+            parse = options if typeof options is 'boolean'
+            callback = data
+            data = {}
             options = {}
 
         opts = buildOptions @options, @headers, @host, path, options
@@ -266,3 +274,5 @@ class exports.JsonClient
             callback err
 
         req.end()
+
+module.exports.JsonClient = JsonClient
