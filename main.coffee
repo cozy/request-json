@@ -74,6 +74,7 @@ class exports.JsonClient
             options = {}
         opts = buildOptions @options, @headers, @host, path, options
         opts.method = 'GET'
+        opts.json = true
 
         request opts, (error, response, body) ->
             if parse then parseBody error, response, body, callback
