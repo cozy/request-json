@@ -172,6 +172,23 @@ class exports.JsonClient
                     form.append "file#{index}", file
 
 
+    # Send a put request with file located at given path as attachment.
+    # Use a read stream for that.
+    # If you use a stream, it must have a "path" attribute...
+    # ...with its path or filename
+    putFile: (path, file, data, callback) ->
+        callback = data if typeof(data) is "function"
+        req = @put path, null, callback, false #do not parse
+
+        # file is a string so it is a file path
+        if typeof file is "string"
+            fs.createReadStream(file).pipe(req)
+
+        # file is not a string and is not an array so it is a stream
+        else if not Array.isArray file
+            file.pipe(req)
+
+
     # Retrieve file located at *path* and save it as *filePath*.
     # Use a write stream for that.
     saveFile: (path, filePath, callback) ->
