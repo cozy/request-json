@@ -2,6 +2,7 @@ should = require('chai').Should()
 http = require "http"
 express = require "express"
 fs = require "fs"
+path = require "path"
 bodyParser = require 'body-parser'
 multiparty = require 'connect-multiparty'
 request = require("./main")
@@ -303,7 +304,8 @@ describe "Files", ->
             @client = request.newClient "http://localhost:8888/"
 
         after ->
-            fs.unlinkSync './up/README.md'
+            for name in fs.readdirSync './up'
+                fs.unlinkSync(path.join './up', name)
             fs.rmdirSync './up'
             @server.close()
 
@@ -442,7 +444,8 @@ describe "Files", ->
             @client = request.newClient "http://localhost:8888/"
 
         after ->
-            fs.unlinkSync './up/file'
+            for name in fs.readdirSync './up'
+                fs.unlinkSync(path.join './up', name)
             fs.rmdirSync './up'
             @server.close()
 
