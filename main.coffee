@@ -126,7 +126,7 @@ class exports.JsonClient
 
 
     # Send a DELETE request to path.
-    del: (path, callback, parse = true) ->
+    del: (path, options, callback, parse = true) ->
         if typeof options is 'function'
             parse = callback if typeof callback is 'boolean'
             callback = options
