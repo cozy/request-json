@@ -4,54 +4,62 @@ url = require "url"
 depd = require "depd"
 deprecate = depd "request-json"
 
-clone = (obj) ->
-    result = {}
-    result[key] = obj[key] for key of obj
-    result
 
-merge = (obj1, obj2) ->
-    result = clone(obj1)
-    if obj2?
-        result[key] = obj2[key] for key of obj2
-    result
+requestJson = module.exports
 
-buildOptions = (clientOptions, clientHeaders, host, path, requestOptions) ->
-    # Check if there is something to merge before performing additional
-    # operation
-    if requestOptions isnt {}
-        options = merge clientOptions, requestOptions
-    if requestOptions? and requestOptions isnt {} and requestOptions.headers
-        options.headers = merge clientHeaders, requestOptions.headers
-    else
-        options.headers = clientHeaders
-    options.uri = url.resolve host, path
-    options
+# Function to build a request json client instance.
+requestJson.createClient = (url, options = {}) ->
+    new requestJson.JsonClient url, options
 
 
-# Parse body assuming the body is a json object. Send an error if the body
-# can't be parsed.
-parseBody =  (error, response, body, callback) ->
-    if typeof body is "string" and body isnt ""
-        try
-            parsed = JSON.parse body
-        catch err
-            error ?= new Error("Parsing error : #{err.message}, body= \n #{body}")
-            parsed = body
+requestJson.newClient = (url, options = {}) ->
+    deprecate "newClient() is deprecated, please use createClient()"
+    requestJson.createClient(url, options)
 
-    else parsed = body
 
-    callback error, response, parsed
+helpers =
 
-# Function to make request json more modular.
-exports.newClient = (url, options = {}) ->
-  deprecate "newClient() is deprecated, please use createClient()"
-  exports.createClient(url, options)
+    # Merge two js objects. The result is a new object, the ones given in
+    # parameter are not changed.
+    merge: (obj1, obj2) ->
+        result = {}
+        result[key] = obj1[key] for key of obj1
+        if obj2?
+            result[key] = obj2[key] for key of obj2
+        result
 
-# Use this function to make request json.
-exports.createClient = (url, options = {}) -> new exports.JsonClient url, options
+    # Build request options from every given parameters.
+    buildOptions: (clientOptions, clientHeaders, host, path, requestOptions) ->
+        # Check if there is something to merge before performing additional
+        # operation
+        if requestOptions isnt {}
+            options = helpers.merge clientOptions, requestOptions
+        if requestOptions? and requestOptions isnt {} and requestOptions.headers
+            options.headers = \
+                helpers.merge clientHeaders, requestOptions.headers
+        else
+            options.headers = clientHeaders
+        options.uri = url.resolve host, path
+        options
+
+    # Parse body assuming the body is a json object. Send an error if the body
+    # can't be parsed.
+    parseBody: (error, response, body, callback) ->
+        if typeof body is "string" and body isnt ""
+            try
+                parsed = JSON.parse body
+            catch err
+                msg = "Parsing error : #{err.message}, body= \n #{body}"
+                error ?= new Error msg
+                parsed = body
+
+        else parsed = body
+
+        callback error, response, parsed
+
 
 # Small HTTP client for easy json interactions with Cozy backends.
-class exports.JsonClient
+class requestJson.JsonClient
 
 
     # Set default headers
@@ -79,11 +87,11 @@ class exports.JsonClient
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = buildOptions @options, @headers, @host, path, options
+        opts = helpers.buildOptions @options, @headers, @host, path, options
         opts.method = 'GET'
 
         request opts, (error, response, body) ->
-            if parse then parseBody error, response, body, callback
+            if parse then helpers.parseBody error, response, body, callback
             else callback error, response, body
 
 
@@ -93,12 +101,12 @@ class exports.JsonClient
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = buildOptions @options, @headers, @host, path, options
+        opts = helpers.buildOptions @options, @headers, @host, path, options
         opts.method = "POST"
         opts.json = json
 
         request opts, (error, response, body) ->
-            if parse then parseBody error, response, body, callback
+            if parse then helpers.parseBody error, response, body, callback
             else callback error, response, body
 
 
@@ -108,12 +116,12 @@ class exports.JsonClient
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = buildOptions @options, @headers, @host, path, options
+        opts = helpers.buildOptions @options, @headers, @host, path, options
         opts.method = "PUT"
         opts.json = json
 
         request opts, (error, response, body) ->
-            if parse then parseBody error, response, body, callback
+            if parse then helpers.parseBody error, response, body, callback
             else callback error, response, body
 
 
@@ -123,12 +131,12 @@ class exports.JsonClient
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = buildOptions @options, @headers, @host, path, options
+        opts = helpers.buildOptions @options, @headers, @host, path, options
         opts.method = "PATCH"
         opts.json = json
 
         request opts, (error, response, body) ->
-            if parse then parseBody error, response, body, callback
+            if parse then helpers.parseBody error, response, body, callback
             else callback error, response, body
 
 
@@ -138,11 +146,11 @@ class exports.JsonClient
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = buildOptions @options, @headers, @host, path, options
+        opts = helpers.buildOptions @options, @headers, @host, path, options
         opts.method = "DELETE"
 
         request opts, (error, response, body) ->
-            if parse then parseBody error, response, body, callback
+            if parse then helpers.parseBody error, response, body, callback
             else callback error, response, body
 
 
