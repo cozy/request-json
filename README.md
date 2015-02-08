@@ -102,4 +102,4 @@ month. Here are the companies which use it for their API clients:
 * [LeanKit](http://leankit.com/) Team Collaboration Solutions
 * [Forecast](http://forecast.io/) Weather Forecasting
 * [JS Report](http://jsreport.net/) Reporting Platform
-* [Clearhead](http://clearhead.me/) Reporting Platform
+* [Clearhead](http://clearhead.me/) Digital Optimization Agency
