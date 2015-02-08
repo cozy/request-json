@@ -53,6 +53,9 @@ client.patch('posts/123/', data, function(err, res, body) {
 });
 ```
 
+**Note:** Previously you should call `newClient()` but now it is renamed to `createClient()`.
+You still can use `newClient()` though it will throw deprecation message.
+
 ### Extra : files
 
 ```javascript

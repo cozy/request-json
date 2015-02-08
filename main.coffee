@@ -1,6 +1,8 @@
 request = require "request"
 fs = require "fs"
 url = require "url"
+depd = require "depd"
+deprecate = depd "request-json"
 
 clone = (obj) ->
     result = {}
@@ -41,7 +43,12 @@ parseBody =  (error, response, body, callback) ->
     callback error, response, parsed
 
 # Function to make request json more modular.
-exports.newClient = (url, options = {}) -> new exports.JsonClient url, options
+exports.newClient = (url, options = {}) ->
+  deprecate "newClient() is deprecated, please use createClient()"
+  exports.createClient(url, options)
+
+# Use this function to make request json.
+exports.createClient = (url, options = {}) -> new exports.JsonClient url, options
 
 # Small HTTP client for easy json interactions with Cozy backends.
 class exports.JsonClient
