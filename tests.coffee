@@ -69,7 +69,7 @@ describe "Common requests", ->
                 req.method.should.equal "GET"
                 req.url.should.equal  "/test-path/"
             @serverGet.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             @serverGet.close()
@@ -94,7 +94,7 @@ describe "Common requests", ->
                 req.method.should.equal "POST"
                 req.url.should.equal  "/test-path/"
             @serverPost.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             @serverPost.close()
@@ -122,7 +122,7 @@ describe "Common requests", ->
                 req.method.should.equal "PUT"
                 req.url.should.equal  "/test-path/123"
             @serverPut.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             @serverPut.close()
@@ -146,7 +146,7 @@ describe "Common requests", ->
                 req.method.should.equal "PATCH"
                 req.url.should.equal  "/test-path/123"
             @serverPatch.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             @serverPatch.close()
@@ -168,7 +168,7 @@ describe "Common requests", ->
                 req.method.should.equal "DELETE"
                 req.url.should.equal  "/test-path/123"
             @serverPut.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             @serverPut.close()
@@ -184,7 +184,7 @@ describe "Common requests", ->
     describe "client.put followed by client.del", ->
 
         before ->
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
             @serverPut = fakeServer msg:"ok", 204, (body, req) ->
                 if req.method is "PUT"
                     should.exist body.putData
@@ -217,7 +217,7 @@ describe "Parsing edge cases", ->
         before ->
             @server = fakeServerRaw 204, ''
             @server.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             @server.close()
@@ -234,7 +234,7 @@ describe "Parsing edge cases", ->
         before ->
             @server = fakeServerRaw 200, '{"this:"isnotjson}'
             @server.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             @server.close()
@@ -254,7 +254,7 @@ describe "Files", ->
         before ->
             @app = fakeDownloadServer '/test-file', './README.md'
             @server = @app.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './dl-README.md'
@@ -277,7 +277,7 @@ describe "Files", ->
         before ->
             @app = fakeDownloadServer '/test-file', './README.md'
             @server = @app.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './dl-README.md'
@@ -301,7 +301,7 @@ describe "Files", ->
         before ->
             @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             for name in fs.readdirSync './up'
@@ -326,7 +326,7 @@ describe "Files", ->
         before ->
             @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/README.md'
@@ -351,7 +351,7 @@ describe "Files", ->
         before ->
             @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/README.md'
@@ -381,7 +381,7 @@ describe "Files", ->
         before ->
             @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/README.md'
@@ -411,7 +411,7 @@ describe "Files", ->
         before ->
             @app = fakeUploadServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/README.md'
@@ -441,7 +441,7 @@ describe "Files", ->
         before ->
             @app = fakePutServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             for name in fs.readdirSync './up'
@@ -466,7 +466,7 @@ describe "Files", ->
         before ->
             @app = fakePutServer '/test-file', './up'
             @server = @app.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             fs.unlinkSync './up/file'
@@ -497,7 +497,7 @@ describe "Basic authentication", ->
                 req.method.should.equal "GET"
                 req.url.should.equal  "/test-path/"
             @serverGet.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             @serverGet.close()
@@ -526,7 +526,7 @@ describe "Set token", ->
                 req.method.should.equal "GET"
                 req.url.should.equal  "/test-path/"
             @serverGet.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             @serverGet.close()
@@ -553,7 +553,7 @@ describe "Set token", ->
                 req.method.should.equal "POST"
                 req.url.should.equal  "/test-path/"
             @serverPost.listen 8888
-            @client = request.newClient "http://localhost:8888/"
+            @client = request.createClient "http://localhost:8888/"
 
         after ->
             @serverPost.close()
@@ -580,7 +580,7 @@ describe "Set header on request", ->
             req.method.should.equal 'PATCH'
             req.url.should.equal  "/test-path/"
         @serverReq.listen 8888
-        @client = request.newClient "http://localhost:8888/"
+        @client = request.createClient "http://localhost:8888/"
 
     after ->
         @serverReq.close()
