@@ -45,16 +45,19 @@
     "request": "2.45.0"
   },
   "devDependencies": {
-    "coffee-script": "1.7.1",
-    "express": "4.3.1",
-    "mocha": "1.19.0",
-    "chai": "1.9.1",
     "body-parser": "1.2.1",
-    "connect-multiparty": "1.0.4"
+    "chai": "1.9.1",
+    "coffee-script": "1.9.0",
+    "coffeelint": "1.8.1",
+    "connect-multiparty": "1.0.4",
+    "express": "4.3.1",
+    "mocha": "1.19.0"
   },
   "scripts": {
-    "prepublish": "cake build",
-    "test": "cake tests"
+    "prepublish": "./node_modules/coffee-script/bin/coffee -cb main.coffee",
+    "test": "mocha tests.coffee --reporter spec --compilers coffee:coffee-script/register --colors",
+    "build": "./node_modules/coffee-script/bin/coffee -cb main.coffee",
+    "lint": "./node_modules/coffeelint/bin/coffeelint main.coffee"
   },
   "repository": {
     "type": "git",
