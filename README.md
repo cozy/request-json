@@ -9,7 +9,7 @@ JSON only requests.
 
 Add it to your package.json file or run in your project folder:
 
-    npm install request-json
+    npm install request-json --save
 
 ## Build status
 
