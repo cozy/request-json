@@ -20,7 +20,7 @@ Status](https://travis-ci.org/cozy/request-json.png?branch=master)](https://trav
 
 ```javascript
 request = require('request-json');
-var client = request.newClient('http://localhost:8888/');
+var client = request.createClient('http://localhost:8888/');
 
 var data = {
   title: 'my title',
