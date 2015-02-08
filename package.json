@@ -40,6 +40,7 @@
   },
   "main": "./main.js",
   "dependencies": {
+    "depd": "^1.0.0",
     "request": "2.45.0"
   },
   "devDependencies": {
