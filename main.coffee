@@ -80,6 +80,9 @@ class requestJson.JsonClient
     setToken: (token) ->
         @headers["x-auth-token"] = token
 
+    # Add OAuth2 Bearer token to request header.
+    setBearerToken: (token) ->
+        @headers["authorization"] = "Bearer #{token}"
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, options, callback, parse = true) ->
