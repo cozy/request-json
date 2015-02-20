@@ -93,6 +93,12 @@ client.get('private/posts/', function(err, res, body) {
 
 ```
 
+### Extra: Headers manipulation
+
+```javascript
+client.headers['Cookie'] = 'Your cookie';
+```
+
 ## Who uses it
 
 request-json and request-json-light are downloaded more than 8000 times each
