@@ -11,6 +11,7 @@ request = require("./main")
 fakeServer = (json, code=200, callback=null) ->
     http.createServer (req, res) ->
         body = ""
+        res.setHeader 'headertest', 'header-value'
         req.on 'data', (chunk) ->
             body += chunk
         req.on 'end', ->
@@ -209,6 +210,31 @@ describe "Common requests", ->
 
         it "Then I get 204 as answer", ->
             @response.statusCode.should.be.equal 204
+
+    describe "client.head", ->
+
+        before ->
+            @serverHead = fakeServer msg:"ok", 200, (body, req) ->
+                req.method.should.equal "HEAD"
+                req.url.should.equal "/test-path/124"
+            @serverHead.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+
+        after ->
+            @serverHead.close()
+
+
+        it "When I send head request to server", (done) ->
+            data = headData: "head data test"
+            @client.head "test-path/124", data, (error, response, body) =>
+                @response = response
+
+                done()
+
+        it "Then I get 200 as answer", ->
+            @response.statusCode.should.be.equal 200
+            @response.body.length.should.equal 0
+            @response.headers.headertest.should.equal 'header-value'
 
 describe "Parsing edge cases", ->
 

@@ -143,6 +143,19 @@ class requestJson.JsonClient
             else callback error, response, body
 
 
+    # Send a HEAD request to path. Expect no response body.
+    head: (path, options, callback) ->
+        if typeof options is 'function'
+            parse = callback if typeof callback is 'boolean'
+            callback = options
+            options = {}
+        opts = helpers.buildOptions @options, @headers, @host, path, options
+        opts.method = 'HEAD'
+
+        request opts, (error, response, body) ->
+            callback error, response
+
+
     # Send a DELETE request to path.
     del: (path, options, callback, parse = true) ->
         if typeof options is 'function'
