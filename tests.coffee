@@ -599,21 +599,21 @@ describe "Set token", ->
 
 describe "Set OAuth2 bearer token", ->
 
-	describe "authentified client.get", ->
+    describe "authentified client.get", ->
 
-		before ->
-			@serverGet = fakeServer msg:"ok", 200, (body, req) ->
-				bearerToken = req.headers['authorization']
-				bearerToken.should.equal 'Bearer cozy' # Check that the bearer prefix has been added
-				req.method.should.equal "GET"
-				req.url.should.equal "/test-path/"
-			@serverGet.listen 8888
-			@client = request.createClient "http://localhost:8888"
+        before ->
+            @serverGet = fakeServer msg:"ok", 200, (body, req) ->
+                bearerToken = req.headers['authorization']
+                bearerToken.should.equal 'Bearer cozy' # Check that the bearer prefix has been added
+                req.method.should.equal "GET"
+                req.url.should.equal "/test-path/"
+            @serverGet.listen 8888
+            @client = request.createClient "http://localhost:8888"
 
-		after ->
-			@serverGet.close()
+        after ->
+            @serverGet.close()
 
-		it "When I send setBearerToken request", (done) ->
+        it "When I send setBearerToken request", (done) ->
             @client.setBearerToken 'cozy'
             @client.get "test-path/", (error, response, body) =>
                 should.not.exist error
