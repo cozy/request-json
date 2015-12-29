@@ -182,6 +182,26 @@ describe "Common requests", ->
         it "Then I get 204 as answer", ->
             @response.statusCode.should.be.equal 204
 
+    describe "client.delete", ->
+
+        before ->
+            @serverPut = fakeServer msg:"ok", 204, (body, req) ->
+                req.method.should.equal "DELETE"
+                req.url.should.equal  "/test-path/123"
+            @serverPut.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+
+        after ->
+            @serverPut.close()
+
+        it "When I send delete request to server", (done) ->
+            @client.delete "test-path/123", (error, response, body) =>
+                @response = response
+                done()
+
+        it "Then I get 204 as answer", ->
+            @response.statusCode.should.be.equal 204
+
     describe "client.put followed by client.del", ->
 
         before ->

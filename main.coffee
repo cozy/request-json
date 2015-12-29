@@ -170,6 +170,11 @@ class requestJson.JsonClient
             else callback error, response, body
 
 
+    # Alias for del
+    delete: (path, options, callback, parse = true) ->
+        @del path, options, callback, parse
+
+
     # Send a post request with file located at given path as attachment
     # (multipart form)
     # Use a read stream for that.
