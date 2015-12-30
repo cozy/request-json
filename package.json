@@ -52,7 +52,7 @@
     "prepublish": "./node_modules/coffee-script/bin/coffee -cb main.coffee",
     "test": "mocha tests.coffee --reporter spec --compilers coffee:coffee-script/register --colors",
     "build": "./node_modules/coffee-script/bin/coffee -cb main.coffee",
-    "lint": "./node_modules/coffeelint/bin/coffeelint main.coffee"
+    "lint": "./node_modules/coffeelint/bin/coffeelint main.coffee tests.coffee"
   },
   "repository": {
     "type": "git",
