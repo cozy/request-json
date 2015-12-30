@@ -21,7 +21,7 @@ fakeServer = (json, code=200, callback=null) ->
             res.end(JSON.stringify json)
 
 fakeServerRaw = (code, out) ->
-     http.createServer (req, res) ->
+    http.createServer (req, res) ->
         req.on 'data', (chunk) ->
         req.on 'end', ->
             res.writeHead code
