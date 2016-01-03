@@ -48,7 +48,7 @@ rawBody = (req, res, next) ->
     req.rawBody = ''
     req.on 'data', (chunk) ->
         req.rawBody += chunk
-    req.on 'end', () ->
+    req.on 'end', ->
         next()
 
 fakePutServer = (url, dir, callback= -> ) ->
@@ -686,7 +686,8 @@ describe "Set OAuth2 bearer token", ->
         before ->
             @serverGet = fakeServer msg:"ok", 200, (body, req) ->
                 bearerToken = req.headers['authorization']
-                bearerToken.should.equal 'Bearer cozy' # Check that the bearer prefix has been added
+                # Check that the bearer prefix has been added
+                bearerToken.should.equal 'Bearer cozy'
                 req.method.should.equal "GET"
                 req.url.should.equal "/test-path/"
             @serverGet.listen 8888
