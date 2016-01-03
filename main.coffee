@@ -75,6 +75,12 @@ class requestJson.JsonClient
         basicCredentials = new Buffer(credentials).toString('base64')
         @headers["authorization"] = "Basic #{basicCredentials}"
 
+    # Set digest auth
+    setDigestAuth: (username, password) ->
+        @options.auth =
+            user: username
+            pass: password
+            sendImmediately: false
 
     # Add a token to request header.
     setToken: (token) ->
