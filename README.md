@@ -101,7 +101,7 @@ client.headers['Cookie'] = 'Your cookie';
 
 ## Who uses it
 
-request-json and request-json-light are downloaded more than 8000 times each
+request-json and request-json-light are downloaded more than 20 000 times each
 month. Here are the companies which use it for their API clients:
 
 * [Cozy Cloud](http://cozy.io) Personal Cloud Solutions
