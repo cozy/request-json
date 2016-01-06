@@ -71,10 +71,16 @@ class requestJson.JsonClient
 
     # Set basic authentication on each requests
     setBasicAuth: (username, password) ->
-        credentials = "#{username}:#{password}"
-        basicCredentials = new Buffer(credentials).toString('base64')
-        @headers["authorization"] = "Basic #{basicCredentials}"
+        @options.auth =
+            user: username
+            pass: password
 
+    # Set digest auth
+    setDigestAuth: (username, password) ->
+        @options.auth =
+            user: username
+            pass: password
+            sendImmediately: false
 
     # Add a token to request header.
     setToken: (token) ->
@@ -82,7 +88,7 @@ class requestJson.JsonClient
 
     # Add OAuth2 Bearer token to request header.
     setBearerToken: (token) ->
-        @headers["authorization"] = "Bearer #{token}"
+        @options.auth = bearer: token
 
     # Send a GET request to path. Parse response body to obtain a JS object.
     get: (path, options, callback, parse = true) ->

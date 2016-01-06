@@ -48,7 +48,7 @@ rawBody = (req, res, next) ->
     req.rawBody = ''
     req.on 'data', (chunk) ->
         req.rawBody += chunk
-    req.on 'end', () ->
+    req.on 'end', ->
         next()
 
 fakePutServer = (url, dir, callback= -> ) ->
@@ -59,6 +59,41 @@ fakePutServer = (url, dir, callback= -> ) ->
         fs.writeFile "#{dir}/file", req.rawBody, (err) ->
             unless err
                 res.send 201
+
+fakeServerWithDigestAuth = (json, code=200, callback= -> ) ->
+    http.createServer (req, res) ->
+        isAuthorized = false
+        body = ""
+        req.on 'data', (chunk) ->
+            body += chunk
+        req.on 'end', ->
+            ok = false
+
+            if req.headers.authorization
+                reg = RegExp '^' + ([].join.call [
+                    'Digest username="john"'
+                    'realm="testrealm@host.com"'
+                    'nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093"'
+                    'uri="/test-path/"'
+                    'response="3432c8a013c25be4770c271d63ec96a9"',
+                ], ', ') + '$'
+                if reg.test req.headers.authorization
+                    ok = true
+                else
+                    ok = false
+
+            if ok
+                callback(body, req)
+                res.writeHead code, 'Content-Type': 'application/json'
+                res.end(JSON.stringify json)
+            else
+                res.setHeader "WWW-Authenticate", [].join.call [
+                    'Digest realm="testrealm@host.com"'
+                    'nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093"'
+                ], ', '
+
+                res.statusCode = 401
+                res.end('401')
 
 
 describe "Common requests", ->
@@ -561,6 +596,33 @@ describe "Basic authentication", ->
             @body.msg.should.equal "ok"
 
 
+describe "Digest authentication", ->
+
+    before ->
+        @serverGet = fakeServerWithDigestAuth msg:"ok", 200, (body, req) =>
+            console.log JSON.stringify req.headers
+            should.exist req.headers.authorization
+            req.method.should.equal "GET"
+            req.url.should.equal  "/test-path/"
+        @serverGet.listen 8888
+        @client = request.createClient "http://localhost:8888/"
+
+    after ->
+        @serverGet.close()
+
+    it "When I send get request to server", (done) ->
+        @client.setDigestAuth "john", "secret"
+        @client.get "test-path/", (error, response, body) =>
+            should.not.exist error
+            response.statusCode.should.be.equal 200
+            @body = body
+            done()
+
+    it "Then I get msg: ok as answer.", ->
+        should.exist @body.msg
+        @body.msg.should.equal "ok"
+
+
 describe "Set token", ->
 
     describe "authentified client.get", ->
@@ -624,7 +686,8 @@ describe "Set OAuth2 bearer token", ->
         before ->
             @serverGet = fakeServer msg:"ok", 200, (body, req) ->
                 bearerToken = req.headers['authorization']
-                bearerToken.should.equal 'Bearer cozy' # Check that the bearer prefix has been added
+                # Check that the bearer prefix has been added
+                bearerToken.should.equal 'Bearer cozy'
                 req.method.should.equal "GET"
                 req.url.should.equal "/test-path/"
             @serverGet.listen 8888
