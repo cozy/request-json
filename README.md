@@ -56,7 +56,7 @@ client.patch('posts/123/', data, function(err, res, body) {
 **Note:** Previously you should call `newClient()` but now it is renamed to `createClient()`.
 You still can use `newClient()` though it will throw deprecation message.
 
-### Extra : files
+### Extra: files
 
 ```javascript
 data = {
@@ -83,7 +83,7 @@ the field with key 'file'.
 If you use a stream, it must have a "path" attribute containing its path or filename.
 
 
-### Extra : basic authentication
+### Extra: basic authentication
 
 ```javascript
 client.setBasicAuth('john', 'secret');
@@ -99,9 +99,24 @@ client.get('private/posts/', function(err, res, body) {
 client.headers['Cookie'] = 'Your cookie';
 ```
 
+### Extra: promises
+
+```javascript
+client.get('posts/')
+  .then(function (result) {
+    console.log(result.res.statusCode);
+    console.log(result.body); 
+  }).catch(err) {
+    console.log(err);
+  }
+});
+```
+
+
+
 ## Who uses it
 
-request-json and request-json-light are downloaded more than 20 000 times each
+request-json and request-json-light are downloaded more than 50 000 times each
 month. Here are the companies which use it for their API clients:
 
 * [Cozy Cloud](http://cozy.io) Personal Cloud Solutions
