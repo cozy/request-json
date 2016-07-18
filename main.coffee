@@ -241,3 +241,70 @@ class requestJson.JsonClient
     # Retrieve file located at *path* and return it as stream.
     saveFileAsStream: (path, callback) ->
         @get path, callback, false  # do not parse result
+
+    # Promised version of get
+    getAsync: (path, parse) ->
+        Promise = @getPromise()
+
+        return new Promise((resolve, reject) =>
+            @get(path, (err, res, body) ->
+                if (err)
+                    return reject(err)
+                resolve([res, body])
+            , parse)
+        )
+
+    # Promised version of post
+    postAsync: (path, json, parse) ->
+        Promise = @getPromise()
+
+        return new Promise((resolve, reject) =>
+            @post(path, json, (err, res, body) ->
+                if (err)
+                    return reject(err)
+                resolve([res, body])
+            , parse)
+        )
+
+    # Promised version of put
+    putAsync: (path, json, parse) ->
+        Promise = @getPromise()
+
+        return new Promise((resolve, reject) =>
+            @put(path, json, (err, res, body) ->
+                if (err)
+                    return reject(err)
+                resolve([res, body])
+            , parse)
+        )
+
+    # Promised version of patch
+    patchAsync: (path, json, parse) ->
+        Promise = @getPromise()
+
+        return new Promise((resolve, reject) =>
+            @patch(path, json, (err, res, body) ->
+                if (err)
+                    return reject(err)
+                resolve([res, body])
+            , parse)
+        )
+
+    # Promised version of patch
+    delAsync: (path, parse) ->
+        Promise = @getPromise()
+
+        return new Promise((resolve, reject) =>
+            @del(path, (err, res, body) ->
+                if (err)
+                    return reject(err)
+                resolve([res, body])
+            , parse)
+        )
+
+    getPromise: () ->
+        Promise = @options.Promise || global.Promise
+        if (!Promise)
+            throw new Error "No Promise provided"
+
+        return Promise
