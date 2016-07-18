@@ -293,7 +293,7 @@ describe "Common requests", ->
             @response.headers.headertest.should.equal 'header-value'
 
 
-    describe "client.getAsync", ->
+    describe "client.get (promise)", ->
 
         before ->
             @serverGet = fakeServer msg:"ok", 200, (body, req) ->
@@ -307,7 +307,7 @@ describe "Common requests", ->
 
         it "When I send promised get request to server", (done) ->
             @client
-                .getAsync("/test-path/")
+                .get("/test-path/")
                 .then((result) =>
                     result.length.should.equal(2)
                     response = result[0]
@@ -327,7 +327,7 @@ describe "Common requests", ->
             @body.msg.should.equal "ok"
 
 
-    describe "client.postAsync", ->
+    describe "client.post (promise)", ->
 
         before ->
             @serverPost = fakeServer msg:"ok", 201, (body, req) ->
@@ -344,7 +344,7 @@ describe "Common requests", ->
             data = postData: "data test"
 
             @client
-                .postAsync("test-path/", data)
+                .post("test-path/", data)
                 .then((result) =>
                     result.length.should.equal(2);
                     @response = result[0]
@@ -362,7 +362,7 @@ describe "Common requests", ->
             @body.msg.should.equal "ok"
 
 
-    describe "client.putAsync", ->
+    describe "client.put (promise)", ->
 
         before ->
             @serverPut = fakeServer msg:"ok", 200, (body, req) ->
@@ -378,7 +378,7 @@ describe "Common requests", ->
         it "When I send promised put request to server", (done) ->
             data = putData: "data test"
             @client
-                .putAsync("test-path/123", data)
+                .put("test-path/123", data)
                 .then((result) =>
                     result.length.should.equal(2);
                     @response = result[0]
@@ -393,7 +393,7 @@ describe "Common requests", ->
             @response.statusCode.should.be.equal 200
 
 
-    describe "client.patchAsync", ->
+    describe "client.patch (promise)", ->
 
         before ->
             @serverPatch = fakeServer msg:"ok", 200, (body, req) ->
@@ -409,7 +409,7 @@ describe "Common requests", ->
         it "When I send promised patch request to server", (done) ->
             data = patchData: "data test"
             @client
-                .patchAsync("test-path/123", data)
+                .patch("test-path/123", data)
                 .then((result) =>
                     result.length.should.equal(2)
                     @response = result[0]
@@ -424,7 +424,7 @@ describe "Common requests", ->
             @response.statusCode.should.be.equal 200
 
 
-    describe "client.delAsync", ->
+    describe "client.del (promise)", ->
 
         before ->
             @serverPut = fakeServer msg:"ok", 204, (body, req) ->
@@ -438,7 +438,7 @@ describe "Common requests", ->
 
         it "When I send promised delete request to server", (done) ->
             @client
-                .delAsync("test-path/123")
+                .del("test-path/123")
                 .then((result) =>
                     result.length.should.equal(2)
                     @response = result[0]
@@ -453,7 +453,7 @@ describe "Common requests", ->
             @response.statusCode.should.be.equal 204
 
 
-    describe "client.headAsync", ->
+    describe "client.head (promise)", ->
 
         before ->
             @serverHead = fakeServer msg:"ok", 200, (body, req) ->
@@ -469,7 +469,7 @@ describe "Common requests", ->
         it "When I send promised head request to server", (done) ->
             data = headData: "head data test"
             @client
-                .headAsync("test-path/124", data)
+                .head("test-path/124", data)
                 .then((result) =>
                     result.length.should.equal(2)
                     @response = result[0]

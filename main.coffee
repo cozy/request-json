@@ -90,90 +90,65 @@ class requestJson.JsonClient
     setBearerToken: (token) ->
         @options.auth = bearer: token
 
-    # Send a GET request to path. Parse response body to obtain a JS object.
-    get: (path, options, callback, parse = true) ->
+
+    # Handle any kind of requests. Turn it into a promise if no callback is
+    # given.
+    handleRequest: (method, path, json, options, callback, parse = true) ->
+
         if typeof options is 'function'
             parse = callback if typeof callback is 'boolean'
             callback = options
             options = {}
-        opts = helpers.buildOptions @options, @headers, @host, path, options
-        opts.method = 'GET'
 
-        request opts, (error, response, body) ->
-            if parse then helpers.parseBody error, response, body, callback
-            else callback error, response, body
+        if typeof callback isnt 'function'
+            Promise = @getPromise()
+
+            return new Promise((resolve, reject) =>
+                @handleRequest(method, path, json, options, (err, res, body) ->
+                    return reject(err) if err
+                    resolve([res, body])
+                , parse)
+            )
+
+        else
+            opts = helpers.buildOptions(
+                @options, @headers, @host, path, options)
+            opts.method = method
+            opts.json = json if json?
+
+            request opts, (error, response, body) ->
+                if parse then helpers.parseBody error, response, body, callback
+                else callback error, response, body
+
+
+    # Send a GET request to path. Parse response body to obtain a JS object.
+    get: (path, options, callback, parse = true) ->
+        @handleRequest 'GET', path, null, options, callback
 
 
     # Send a POST request to path with given JSON as body.
     post: (path, json, options, callback, parse = true) ->
-        if typeof options is 'function'
-            parse = callback if typeof callback is 'boolean'
-            callback = options
-            options = {}
-        opts = helpers.buildOptions @options, @headers, @host, path, options
-        opts.method = "POST"
-        opts.json = json
-
-        request opts, (error, response, body) ->
-            if parse then helpers.parseBody error, response, body, callback
-            else callback error, response, body
+        @handleRequest 'POST', path, json, options, callback
 
 
     # Send a PUT request to path with given JSON as body.
     put: (path, json, options, callback, parse = true) ->
-        if typeof options is 'function'
-            parse = callback if typeof callback is 'boolean'
-            callback = options
-            options = {}
-        opts = helpers.buildOptions @options, @headers, @host, path, options
-        opts.method = "PUT"
-        opts.json = json
-
-        request opts, (error, response, body) ->
-            if parse then helpers.parseBody error, response, body, callback
-            else callback error, response, body
+        @handleRequest 'PUT', path, json, options, callback
 
 
     # Send a PATCH request to path with given JSON as body.
     patch: (path, json, options, callback, parse = true) ->
-        if typeof options is 'function'
-            parse = callback if typeof callback is 'boolean'
-            callback = options
-            options = {}
-        opts = helpers.buildOptions @options, @headers, @host, path, options
-        opts.method = "PATCH"
-        opts.json = json
-
-        request opts, (error, response, body) ->
-            if parse then helpers.parseBody error, response, body, callback
-            else callback error, response, body
+        @handleRequest 'PATCH', path, json, options, callback
 
 
     # Send a HEAD request to path. Expect no response body.
     head: (path, options, callback) ->
-        if typeof options is 'function'
-            parse = callback if typeof callback is 'boolean'
-            callback = options
-            options = {}
-        opts = helpers.buildOptions @options, @headers, @host, path, options
-        opts.method = 'HEAD'
-
-        request opts, (error, response, body) ->
-            callback error, response
+        @handleRequest 'HEAD', path, null, options, callback
 
 
     # Send a DELETE request to path.
     del: (path, options, callback, parse = true) ->
-        if typeof options is 'function'
-            parse = callback if typeof callback is 'boolean'
-            callback = options
-            options = {}
-        opts = helpers.buildOptions @options, @headers, @host, path, options
-        opts.method = "DELETE"
-
-        request opts, (error, response, body) ->
-            if parse then helpers.parseBody error, response, body, callback
-            else callback error, response, body
+        @handleRequest 'DELETE', path, null, options, callback
 
 
     # Alias for del
@@ -242,72 +217,10 @@ class requestJson.JsonClient
     saveFileAsStream: (path, callback) ->
         @get path, callback, false  # do not parse result
 
-    # Promised version of get
-    getAsync: (path, parse) ->
-        Promise = @getPromise()
 
-        return new Promise((resolve, reject) =>
-            @get(path, (err, res, body) ->
-                return reject(err) if err
-                resolve([res, body])
-            , parse)
-        )
-
-    # Promised version of post
-    postAsync: (path, json, parse) ->
-        Promise = @getPromise()
-
-        return new Promise((resolve, reject) =>
-            @post(path, json, (err, res, body) ->
-                return reject(err) if err
-                resolve([res, body])
-            , parse)
-        )
-
-    # Promised version of put
-    putAsync: (path, json, parse) ->
-        Promise = @getPromise()
-
-        return new Promise((resolve, reject) =>
-            @put(path, json, (err, res, body) ->
-                return reject(err) if err
-                resolve([res, body])
-            , parse)
-        )
-
-    # Promised version of patch
-    patchAsync: (path, json, parse) ->
-        Promise = @getPromise()
-
-        return new Promise((resolve, reject) =>
-            @patch(path, json, (err, res, body) ->
-                return reject(err) if err
-                resolve([res, body])
-            , parse)
-        )
-
-    # Promised version of del
-    delAsync: (path, parse) ->
-        Promise = @getPromise()
-
-        return new Promise((resolve, reject) =>
-            @del(path, (err, res, body) ->
-                return reject(err) if err
-                resolve([res, body])
-            , parse)
-        )
-
-    # Promised version of head
-    headAsync: (path, parse) ->
-        Promise = @getPromise()
-
-        return new Promise((resolve, reject) =>
-            @head(path, (err, res, body) ->
-                return reject(err) if err
-                resolve([res, body])
-            , parse)
-        )
-
+    # Test if Promise is properly defined in the global scope. If a Promise
+    # handler is given as option it is used in place of the main Promise
+    # object.
     getPromise: () ->
         Promise = @options.Promise or global.Promise
         unless Promise
