@@ -102,7 +102,7 @@ describe "Common requests", ->
     describe "client.get", ->
 
         before ->
-            @serverGet = fakeServer msg:"ok", 200, (body, req) ->
+            @serverGet = fakeServer msg: "ok", 200, (body, req) ->
                 req.method.should.equal "GET"
                 req.url.should.equal  "/test-path/"
             @serverGet.listen 8888
@@ -309,9 +309,8 @@ describe "Common requests", ->
             @client
                 .get("/test-path/")
                 .then((result) =>
-                    result.length.should.equal 2
-                    response = result[0]
-                    body = result[1]
+                    response = result.res
+                    body = result.body
 
                     response.statusCode.should.be.equal 200
                     @body = body
@@ -346,9 +345,8 @@ describe "Common requests", ->
             @client
                 .post("test-path/", data)
                 .then((result) =>
-                    result.length.should.equal 2
-                    @response = result[0]
-                    @body = result[1]
+                    @response = result.res
+                    @body = result.body
                     done()
                 )
                 .catch((error) ->
@@ -380,8 +378,7 @@ describe "Common requests", ->
             @client
                 .put("test-path/123", data)
                 .then((result) =>
-                    result.length.should.equal 2
-                    @response = result[0]
+                    @response = result.res
                     done()
                 )
                 .catch((error) ->
@@ -411,8 +408,7 @@ describe "Common requests", ->
             @client
                 .patch("test-path/123", data)
                 .then((result) =>
-                    result.length.should.equal 2
-                    @response = result[0]
+                    @response = result.res
                     done()
                 )
                 .catch((error) ->
@@ -440,8 +436,7 @@ describe "Common requests", ->
             @client
                 .del("test-path/123")
                 .then((result) =>
-                    result.length.should.equal 2
-                    @response = result[0]
+                    @response = result.res
                     done()
                 )
                 .catch((error) ->
@@ -471,8 +466,7 @@ describe "Common requests", ->
             @client
                 .head("test-path/124", data)
                 .then((result) =>
-                    result.length.should.equal 2
-                    @response = result[0]
+                    @response = result.res
                     done()
                 )
                 .catch((error) ->
