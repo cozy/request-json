@@ -291,6 +291,188 @@ describe "Common requests", ->
             @response.body.length.should.equal 0
             @response.headers.headertest.should.equal 'header-value'
 
+    describe "client.getAsync", ->
+
+        before ->
+            @serverGet = fakeServer msg:"ok", 200, (body, req) ->
+                req.method.should.equal "GET"
+                req.url.should.equal "/test-path/"
+            @serverGet.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+
+        after ->
+            @serverGet.close()
+
+        it "When I send promised get request to server", () ->
+            return @client
+                .getAsync("/test-path/")
+                .then((result) =>
+                    result.length.should.equal(2);
+                    response = result[0]
+                    body = result[1]
+
+                    response.statusCode.should.be.equal 200
+                    @body = body
+                )
+                .catch((error) =>
+                    should.not.exist error
+                )
+
+        it "Then I get msg: ok as answer.", ->
+            should.exist @body.msg
+            @body.msg.should.equal "ok"
+
+
+    describe "client.postAsync", ->
+
+        before ->
+            @serverPost = fakeServer msg:"ok", 201, (body, req) ->
+                should.exist body.postData
+                req.method.should.equal "POST"
+                req.url.should.equal  "/test-path/"
+            @serverPost.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+
+        after ->
+            @serverPost.close()
+
+
+        it "When I send promised post request to server", () ->
+            data = postData: "data test"
+
+            return @client
+                .postAsync("test-path/", data)
+                .then((result) =>
+                    result.length.should.equal(2);
+                    @response = result[0]
+                    @body = result[1]
+                )
+                .catch((error) =>
+                    should.not.exist error
+                )
+
+
+        it "Then I get 201 as answer", ->
+            @response.statusCode.should.be.equal 201
+            should.exist @body.msg
+            @body.msg.should.equal "ok"
+
+
+    describe "client.putAsync", ->
+
+        before ->
+            @serverPut = fakeServer msg:"ok", 200, (body, req) ->
+                should.exist body.putData
+                req.method.should.equal "PUT"
+                req.url.should.equal  "/test-path/123"
+            @serverPut.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+
+        after ->
+            @serverPut.close()
+
+
+        it "When I send promised put request to server", () ->
+            data = putData: "data test"
+            return @client
+                .putAsync("test-path/123", data)
+                .then((result) =>
+                    result.length.should.equal(2);
+                    @response = result[0]
+                )
+                .catch((error) =>
+                    should.not.exist error
+                )
+
+        it "Then I get 200 as answer", ->
+            @response.statusCode.should.be.equal 200
+
+
+    describe "client.patchAsync", ->
+
+        before ->
+            @serverPatch = fakeServer msg:"ok", 200, (body, req) ->
+                should.exist body.patchData
+                req.method.should.equal "PATCH"
+                req.url.should.equal  "/test-path/123"
+            @serverPatch.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+
+        after ->
+            @serverPatch.close()
+
+
+        it "When I send promised patch request to server", () ->
+            data = patchData: "data test"
+            return @client
+                .patchAsync("test-path/123", data)
+                .then((result) =>
+                    result.length.should.equal(2);
+                    @response = result[0]
+                )
+                .catch((error) =>
+                    should.not.exist error
+                )
+
+        it "Then I get 200 as answer", ->
+            @response.statusCode.should.be.equal 200
+
+    describe "client.delAsync", ->
+
+        before ->
+            @serverPut = fakeServer msg:"ok", 204, (body, req) ->
+                req.method.should.equal "DELETE"
+                req.url.should.equal  "/test-path/123"
+            @serverPut.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+
+        after ->
+            @serverPut.close()
+
+        it "When I send promised delete request to server", () ->
+            return @client
+                .delAsync("test-path/123")
+                .then((result) =>
+                    result.length.should.equal(2);
+                    @response = result[0]
+                )
+                .catch((error) =>
+                    should.not.exist error
+                )
+
+        it "Then I get 204 as answer", ->
+            @response.statusCode.should.be.equal 204
+
+    describe "client.headAsync", ->
+
+        before ->
+            @serverHead = fakeServer msg:"ok", 200, (body, req) ->
+                req.method.should.equal "HEAD"
+                req.url.should.equal "/test-path/124"
+            @serverHead.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+
+        after ->
+            @serverHead.close()
+
+
+        it "When I send promised head request to server", () ->
+            data = headData: "head data test"
+            return @client
+                .headAsync("test-path/124", data)
+                .then((result) =>
+                    result.length.should.equal(2);
+                    @response = result[0]
+                )
+                .catch((error) =>
+                    should.not.exist error
+                )
+
+        it "Then I get 200 as answer", ->
+            @response.statusCode.should.be.equal 200
+            @response.body.length.should.equal 0
+            @response.headers.headertest.should.equal 'header-value'
+
 describe "Parsing edge cases", ->
 
     describe "no body on 204", ->
