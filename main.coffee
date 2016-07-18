@@ -248,8 +248,7 @@ class requestJson.JsonClient
 
         return new Promise((resolve, reject) =>
             @get(path, (err, res, body) ->
-                if (err)
-                    return reject(err)
+                return reject(err) if err
                 resolve([res, body])
             , parse)
         )
@@ -260,8 +259,7 @@ class requestJson.JsonClient
 
         return new Promise((resolve, reject) =>
             @post(path, json, (err, res, body) ->
-                if (err)
-                    return reject(err)
+                return reject(err) if err
                 resolve([res, body])
             , parse)
         )
@@ -272,8 +270,7 @@ class requestJson.JsonClient
 
         return new Promise((resolve, reject) =>
             @put(path, json, (err, res, body) ->
-                if (err)
-                    return reject(err)
+                return reject(err) if err
                 resolve([res, body])
             , parse)
         )
@@ -284,8 +281,7 @@ class requestJson.JsonClient
 
         return new Promise((resolve, reject) =>
             @patch(path, json, (err, res, body) ->
-                if (err)
-                    return reject(err)
+                return reject(err) if err
                 resolve([res, body])
             , parse)
         )
@@ -296,8 +292,7 @@ class requestJson.JsonClient
 
         return new Promise((resolve, reject) =>
             @del(path, (err, res, body) ->
-                if (err)
-                    return reject(err)
+                return reject(err) if err
                 resolve([res, body])
             , parse)
         )
@@ -308,15 +303,14 @@ class requestJson.JsonClient
 
         return new Promise((resolve, reject) =>
             @head(path, (err, res, body) ->
-                if (err)
-                    return reject(err)
+                return reject(err) if err
                 resolve([res, body])
             , parse)
         )
 
     getPromise: () ->
-        Promise = @options.Promise || global.Promise
-        if (!Promise)
+        Promise = @options.Promise or global.Promise
+        unless Promise
             throw new Error "No Promise provided"
 
         return Promise

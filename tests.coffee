@@ -6,6 +6,7 @@ path = require "path"
 bodyParser = require 'body-parser'
 multiparty = require 'connect-multiparty'
 request = require("./main")
+global.Promise ?= require 'lie'
 
 
 fakeServer = (json, code=200, callback=null) ->
@@ -135,7 +136,6 @@ describe "Common requests", ->
         after ->
             @serverPost.close()
 
-
         it "When I send post request to server", (done) ->
             data = postData: "data test"
             @client.post "test-path/", data, (error, response, body) =>
@@ -163,7 +163,6 @@ describe "Common requests", ->
         after ->
             @serverPut.close()
 
-
         it "When I send put request to server", (done) ->
             data = putData: "data test"
             @client.put "test-path/123", data, (error, response, body) =>
@@ -187,7 +186,6 @@ describe "Common requests", ->
         after ->
             @serverPatch.close()
 
-
         it "When I send patch request to server", (done) ->
             data = patchData: "data test"
             @client.patch "test-path/123", data, (error, response, body) =>
@@ -196,6 +194,7 @@ describe "Common requests", ->
 
         it "Then I get 200 as answer", ->
             @response.statusCode.should.be.equal 200
+
 
     describe "client.del", ->
 
@@ -217,6 +216,7 @@ describe "Common requests", ->
         it "Then I get 204 as answer", ->
             @response.statusCode.should.be.equal 204
 
+
     describe "client.delete", ->
 
         before ->
@@ -236,6 +236,7 @@ describe "Common requests", ->
 
         it "Then I get 204 as answer", ->
             @response.statusCode.should.be.equal 204
+
 
     describe "client.put followed by client.del", ->
 
@@ -266,6 +267,7 @@ describe "Common requests", ->
         it "Then I get 204 as answer", ->
             @response.statusCode.should.be.equal 204
 
+
     describe "client.head", ->
 
         before ->
@@ -277,7 +279,6 @@ describe "Common requests", ->
 
         after ->
             @serverHead.close()
-
 
         it "When I send head request to server", (done) ->
             data = headData: "head data test"
@@ -291,6 +292,7 @@ describe "Common requests", ->
             @response.body.length.should.equal 0
             @response.headers.headertest.should.equal 'header-value'
 
+
     describe "client.getAsync", ->
 
         before ->
@@ -303,19 +305,21 @@ describe "Common requests", ->
         after ->
             @serverGet.close()
 
-        it "When I send promised get request to server", () ->
-            return @client
+        it "When I send promised get request to server", (done) ->
+            @client
                 .getAsync("/test-path/")
                 .then((result) =>
-                    result.length.should.equal(2);
+                    result.length.should.equal(2)
                     response = result[0]
                     body = result[1]
 
                     response.statusCode.should.be.equal 200
                     @body = body
+                    done()
                 )
                 .catch((error) =>
                     should.not.exist error
+                    done()
                 )
 
         it "Then I get msg: ok as answer.", ->
@@ -336,21 +340,21 @@ describe "Common requests", ->
         after ->
             @serverPost.close()
 
-
-        it "When I send promised post request to server", () ->
+        it "When I send promised post request to server", (done) ->
             data = postData: "data test"
 
-            return @client
+            @client
                 .postAsync("test-path/", data)
                 .then((result) =>
                     result.length.should.equal(2);
                     @response = result[0]
                     @body = result[1]
+                    done()
                 )
                 .catch((error) =>
                     should.not.exist error
+                    done()
                 )
-
 
         it "Then I get 201 as answer", ->
             @response.statusCode.should.be.equal 201
@@ -371,17 +375,18 @@ describe "Common requests", ->
         after ->
             @serverPut.close()
 
-
-        it "When I send promised put request to server", () ->
+        it "When I send promised put request to server", (done) ->
             data = putData: "data test"
-            return @client
+            @client
                 .putAsync("test-path/123", data)
                 .then((result) =>
                     result.length.should.equal(2);
                     @response = result[0]
+                    done()
                 )
                 .catch((error) =>
                     should.not.exist error
+                    done()
                 )
 
         it "Then I get 200 as answer", ->
@@ -401,21 +406,23 @@ describe "Common requests", ->
         after ->
             @serverPatch.close()
 
-
-        it "When I send promised patch request to server", () ->
+        it "When I send promised patch request to server", (done) ->
             data = patchData: "data test"
-            return @client
+            @client
                 .patchAsync("test-path/123", data)
                 .then((result) =>
-                    result.length.should.equal(2);
+                    result.length.should.equal(2)
                     @response = result[0]
+                    done()
                 )
                 .catch((error) =>
                     should.not.exist error
+                    done()
                 )
 
         it "Then I get 200 as answer", ->
             @response.statusCode.should.be.equal 200
+
 
     describe "client.delAsync", ->
 
@@ -429,19 +436,22 @@ describe "Common requests", ->
         after ->
             @serverPut.close()
 
-        it "When I send promised delete request to server", () ->
-            return @client
+        it "When I send promised delete request to server", (done) ->
+            @client
                 .delAsync("test-path/123")
                 .then((result) =>
-                    result.length.should.equal(2);
+                    result.length.should.equal(2)
                     @response = result[0]
+                    done()
                 )
                 .catch((error) =>
                     should.not.exist error
+                    done()
                 )
 
         it "Then I get 204 as answer", ->
             @response.statusCode.should.be.equal 204
+
 
     describe "client.headAsync", ->
 
@@ -456,22 +466,25 @@ describe "Common requests", ->
             @serverHead.close()
 
 
-        it "When I send promised head request to server", () ->
+        it "When I send promised head request to server", (done) ->
             data = headData: "head data test"
-            return @client
+            @client
                 .headAsync("test-path/124", data)
                 .then((result) =>
-                    result.length.should.equal(2);
+                    result.length.should.equal(2)
                     @response = result[0]
+                    done()
                 )
                 .catch((error) =>
                     should.not.exist error
+                    done()
                 )
 
         it "Then I get 200 as answer", ->
             @response.statusCode.should.be.equal 200
             @response.body.length.should.equal 0
             @response.headers.headertest.should.equal 'header-value'
+
 
 describe "Parsing edge cases", ->
 
@@ -492,6 +505,7 @@ describe "Parsing edge cases", ->
                 body.should.equal ''
                 done()
 
+
     describe "invalid json", ->
 
         before ->
@@ -510,7 +524,9 @@ describe "Parsing edge cases", ->
                 error.message.should.have.string '{"this:"isnotjson}'
                 done()
 
+
 describe "Files", ->
+
 
     describe "client.saveFile", ->
 
@@ -534,6 +550,7 @@ describe "Files", ->
             fileStats = fs.statSync './README.md'
             resultStats = fs.statSync './dl-README.md'
             resultStats.size.should.equal fileStats.size
+
 
     describe "client.saveFileAsStream", ->
 
@@ -583,6 +600,7 @@ describe "Files", ->
             fileStats = fs.statSync './README.md'
             resultStats = fs.statSync './up/README.md'
             resultStats.size.should.equal fileStats.size
+
 
     describe "client.sendFileFromStream", ->
 
@@ -639,6 +657,7 @@ describe "Files", ->
             resultStats = fs.statSync './up/package.json'
             resultStats.size.should.equal fileStats.size
 
+
     describe "client.sendManyFilesMixingStreamAndPaths", ->
 
         before ->
@@ -669,6 +688,7 @@ describe "Files", ->
             resultStats = fs.statSync './up/package.json'
             resultStats.size.should.equal fileStats.size
 
+
     describe "client.sendManyFilesFromStream", ->
 
         before ->
@@ -698,6 +718,7 @@ describe "Files", ->
             fileStats = fs.statSync './package.json'
             resultStats = fs.statSync './up/package.json'
             resultStats.size.should.equal fileStats.size
+
 
     describe "client.putFile", ->
 
@@ -748,7 +769,9 @@ describe "Files", ->
             resultStats = fs.statSync './up/file'
             resultStats.size.should.equal fileStats.size
 
+
 describe "Basic authentication", ->
+
 
     describe "authentified client.get", ->
 
@@ -782,7 +805,6 @@ describe "Digest authentication", ->
 
     before ->
         @serverGet = fakeServerWithDigestAuth msg:"ok", 200, (body, req) =>
-            console.log JSON.stringify req.headers
             should.exist req.headers.authorization
             req.method.should.equal "GET"
             req.url.should.equal  "/test-path/"
@@ -806,6 +828,7 @@ describe "Digest authentication", ->
 
 
 describe "Set token", ->
+
 
     describe "authentified client.get", ->
 
@@ -832,6 +855,7 @@ describe "Set token", ->
         it "Then I get msg: ok as answer.", ->
             should.exist @body.msg
             @body.msg.should.equal "ok"
+
 
     describe "authentified client.post", ->
 
@@ -861,7 +885,9 @@ describe "Set token", ->
             should.exist @body.msg
             @body.msg.should.equal "ok"
 
+
 describe "Set OAuth2 bearer token", ->
+
 
     describe "authentified client.get", ->
 
@@ -890,6 +916,7 @@ describe "Set OAuth2 bearer token", ->
             should.exist @body.msg
             @body.msg.should.equal "ok"
 
+
 describe "Set header on request", ->
 
     before ->
@@ -916,3 +943,4 @@ describe "Set header on request", ->
     it "Then I get msg: ok as answer.", ->
         should.exist @body.msg
         @body.msg.should.equal "ok"
+
