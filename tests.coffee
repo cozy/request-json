@@ -31,18 +31,18 @@ fakeServerRaw = (code, out) ->
 fakeDownloadServer = (url, path, callback= ->) ->
     app = express()
     app.get url, (req, res) ->
-        res.sendfile path
+        res.sendFile path, root: __dirname
         callback req
 
 fakeUploadServer = (url, dir, callback= -> ) ->
     app = express()
     fs.mkdirSync dir unless fs.existsSync dir
-    app.use bodyParser()
+    app.use bodyParser.urlencoded extended: true
     app.use multiparty uploadDir: dir
     app.post url, (req, res) ->
         for key, file of req.files
             fs.renameSync file.path, dir + '/' + file.name
-        res.send 201
+        res.sendStatus 201
 
 rawBody = (req, res, next) ->
     req.setEncoding 'utf8'
@@ -59,7 +59,7 @@ fakePutServer = (url, dir, callback= -> ) ->
     app.put url, (req, res) ->
         fs.writeFile "#{dir}/file", req.rawBody, (err) ->
             unless err
-                res.send 201
+                res.sendStatus 201
 
 fakeServerWithDigestAuth = (json, code=200, callback= -> ) ->
     http.createServer (req, res) ->
