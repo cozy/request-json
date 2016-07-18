@@ -14,7 +14,7 @@ Add it to your package.json file or run in your project folder:
 ## Build status
 
 [![Build
-Status](https://travis-ci.org/cozy/request-json.png?branch=master)](https://travis-ci.org/mycozycloud/request-json)
+Status](https://travis-ci.org/cozy/request-json.png?branch=master)](https://travis-ci.org/cozy/request-json)
 
 ## How it works
 
@@ -93,7 +93,7 @@ client.get('private/posts/', function(err, res, body) {
 
 ```
 
-### Extra: Headers manipulation
+### Extra: headers manipulation
 
 ```javascript
 client.headers['Cookie'] = 'Your cookie';
