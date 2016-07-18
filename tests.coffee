@@ -309,7 +309,7 @@ describe "Common requests", ->
             @client
                 .get("/test-path/")
                 .then((result) =>
-                    result.length.should.equal(2)
+                    result.length.should.equal 2
                     response = result[0]
                     body = result[1]
 
@@ -317,7 +317,7 @@ describe "Common requests", ->
                     @body = body
                     done()
                 )
-                .catch((error) =>
+                .catch((error) ->
                     should.not.exist error
                     done()
                 )
@@ -346,12 +346,12 @@ describe "Common requests", ->
             @client
                 .post("test-path/", data)
                 .then((result) =>
-                    result.length.should.equal(2);
+                    result.length.should.equal 2
                     @response = result[0]
                     @body = result[1]
                     done()
                 )
-                .catch((error) =>
+                .catch((error) ->
                     should.not.exist error
                     done()
                 )
@@ -380,11 +380,11 @@ describe "Common requests", ->
             @client
                 .put("test-path/123", data)
                 .then((result) =>
-                    result.length.should.equal(2);
+                    result.length.should.equal 2
                     @response = result[0]
                     done()
                 )
-                .catch((error) =>
+                .catch((error) ->
                     should.not.exist error
                     done()
                 )
@@ -411,11 +411,11 @@ describe "Common requests", ->
             @client
                 .patch("test-path/123", data)
                 .then((result) =>
-                    result.length.should.equal(2)
+                    result.length.should.equal 2
                     @response = result[0]
                     done()
                 )
-                .catch((error) =>
+                .catch((error) ->
                     should.not.exist error
                     done()
                 )
@@ -440,11 +440,11 @@ describe "Common requests", ->
             @client
                 .del("test-path/123")
                 .then((result) =>
-                    result.length.should.equal(2)
+                    result.length.should.equal 2
                     @response = result[0]
                     done()
                 )
-                .catch((error) =>
+                .catch((error) ->
                     should.not.exist error
                     done()
                 )
@@ -471,11 +471,11 @@ describe "Common requests", ->
             @client
                 .head("test-path/124", data)
                 .then((result) =>
-                    result.length.should.equal(2)
+                    result.length.should.equal 2
                     @response = result[0]
                     done()
                 )
-                .catch((error) =>
+                .catch((error) ->
                     should.not.exist error
                     done()
                 )
@@ -499,7 +499,7 @@ describe "Parsing edge cases", ->
             @server.close()
 
         it 'should not throw', (done) ->
-            @client.del "test-path/", (error, response, body) =>
+            @client.del "test-path/", (error, response, body) ->
                 should.not.exist error
                 response.statusCode.should.be.equal 204
                 body.should.equal ''
@@ -517,7 +517,7 @@ describe "Parsing edge cases", ->
             @server.close()
 
         it 'should throw', (done) ->
-            @client.get "test-path/", (error, response, body) =>
+            @client.get "test-path/", (error, response, body) ->
                 should.exist error
                 should.exist body
                 body.should.be.equal '{"this:"isnotjson}'
@@ -541,7 +541,7 @@ describe "Files", ->
 
         it "When I send get request to server", (done) ->
             @client.saveFile 'test-file', './dl-README.md', \
-                             (error, response, body) =>
+                             (error, response, body) ->
                 should.not.exist error
                 response.statusCode.should.be.equal 200
                 done()
@@ -564,7 +564,7 @@ describe "Files", ->
             @server.close()
 
         it "When I send get request to server", (done) ->
-            stream = @client.saveFileAsStream 'test-file', (err, res, body) =>
+            stream = @client.saveFileAsStream 'test-file', (err, res, body) ->
                 should.not.exist err
                 res.statusCode.should.be.equal 200
                 done()
@@ -591,7 +591,7 @@ describe "Files", ->
 
         it "When I send post request to server", (done) ->
             file = './README.md'
-            @client.sendFile 'test-file', file, (error, response, body) =>
+            @client.sendFile 'test-file', file, (error, response, body) ->
                 should.not.exist error
                 response.statusCode.should.be.equal 201
                 done()
@@ -616,7 +616,7 @@ describe "Files", ->
 
         it "When I send post request to server", (done) ->
             @file = fs.createReadStream './README.md'
-            @client.sendFile 'test-file', @file, (error, response, body) =>
+            @client.sendFile 'test-file', @file, (error, response, body) ->
                 should.not.exist error
                 response.statusCode.should.be.equal 201
                 done()
@@ -644,7 +644,7 @@ describe "Files", ->
             @file = './README.md'
             @file2 = './package.json'
             files = [@file, @file2]
-            @client.sendFile 'test-file', files, (error, response, body) =>
+            @client.sendFile 'test-file', files, (error, response, body) ->
                 should.not.exist error
                 response.statusCode.should.be.equal 201
                 done()
@@ -675,7 +675,7 @@ describe "Files", ->
             @file = './README.md'
             @file2 = fs.createReadStream './package.json'
             files = [@file, @file2]
-            @client.sendFile 'test-file', files, (error, response, body) =>
+            @client.sendFile 'test-file', files, (error, response, body) ->
                 should.not.exist error
                 response.statusCode.should.be.equal 201
                 done()
@@ -706,7 +706,7 @@ describe "Files", ->
             @file = fs.createReadStream './README.md'
             @file2 = fs.createReadStream './package.json'
             files = [@file, @file2]
-            @client.sendFile 'test-file', files, (error, response, body) =>
+            @client.sendFile 'test-file', files, (error, response, body) ->
                 should.not.exist error
                 response.statusCode.should.be.equal 201
                 done()
@@ -735,7 +735,7 @@ describe "Files", ->
 
         it "When I send put request to server", (done) ->
             file = './README.md'
-            @client.putFile 'test-file', file, (error, response, body) =>
+            @client.putFile 'test-file', file, (error, response, body) ->
                 should.not.exist error
                 response.statusCode.should.be.equal 201
                 done()
@@ -759,7 +759,7 @@ describe "Files", ->
 
         it "When I send put request to server", (done) ->
             @file = fs.createReadStream './README.md'
-            @client.putFile 'test-file', @file, (error, response, body) =>
+            @client.putFile 'test-file', @file, (error, response, body) ->
                 should.not.exist error
                 response.statusCode.should.be.equal 201
                 done()
@@ -804,7 +804,7 @@ describe "Basic authentication", ->
 describe "Digest authentication", ->
 
     before ->
-        @serverGet = fakeServerWithDigestAuth msg:"ok", 200, (body, req) =>
+        @serverGet = fakeServerWithDigestAuth msg:"ok", 200, (body, req) ->
             should.exist req.headers.authorization
             req.method.should.equal "GET"
             req.url.should.equal  "/test-path/"

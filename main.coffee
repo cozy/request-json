@@ -221,7 +221,7 @@ class requestJson.JsonClient
     # Test if Promise is properly defined in the global scope. If a Promise
     # handler is given as option it is used in place of the main Promise
     # object.
-    getPromise: () ->
+    getPromise: ->
         Promise = @options.Promise or global.Promise
         unless Promise
             throw new Error "No Promise provided"
