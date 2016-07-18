@@ -290,12 +290,24 @@ class requestJson.JsonClient
             , parse)
         )
 
-    # Promised version of patch
+    # Promised version of del
     delAsync: (path, parse) ->
         Promise = @getPromise()
 
         return new Promise((resolve, reject) =>
             @del(path, (err, res, body) ->
+                if (err)
+                    return reject(err)
+                resolve([res, body])
+            , parse)
+        )
+
+    # Promised version of head
+    headAsync: (path, parse) ->
+        Promise = @getPromise()
+
+        return new Promise((resolve, reject) =>
+            @head(path, (err, res, body) ->
                 if (err)
                     return reject(err)
                 resolve([res, body])
