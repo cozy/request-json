@@ -126,7 +126,7 @@ describe "Common requests", ->
     describe "client.post", ->
 
         before ->
-            @serverPost = fakeServer msg:"ok", 201, (body, req) ->
+            @serverPost = fakeServer msg: "ok", 201, (body, req) ->
                 should.exist body.postData
                 req.method.should.equal "POST"
                 req.url.should.equal  "/test-path/"
@@ -153,7 +153,7 @@ describe "Common requests", ->
     describe "client.put", ->
 
         before ->
-            @serverPut = fakeServer msg:"ok", 200, (body, req) ->
+            @serverPut = fakeServer msg: "ok", 200, (body, req) ->
                 should.exist body.putData
                 req.method.should.equal "PUT"
                 req.url.should.equal  "/test-path/123"
@@ -176,7 +176,7 @@ describe "Common requests", ->
     describe "client.patch", ->
 
         before ->
-            @serverPatch = fakeServer msg:"ok", 200, (body, req) ->
+            @serverPatch = fakeServer msg: "ok", 200, (body, req) ->
                 should.exist body.patchData
                 req.method.should.equal "PATCH"
                 req.url.should.equal  "/test-path/123"
@@ -199,7 +199,7 @@ describe "Common requests", ->
     describe "client.del", ->
 
         before ->
-            @serverPut = fakeServer msg:"ok", 204, (body, req) ->
+            @serverPut = fakeServer msg: "ok", 204, (body, req) ->
                 req.method.should.equal "DELETE"
                 req.url.should.equal  "/test-path/123"
             @serverPut.listen 8888
@@ -220,7 +220,7 @@ describe "Common requests", ->
     describe "client.delete", ->
 
         before ->
-            @serverPut = fakeServer msg:"ok", 204, (body, req) ->
+            @serverPut = fakeServer msg: "ok", 204, (body, req) ->
                 req.method.should.equal "DELETE"
                 req.url.should.equal  "/test-path/123"
             @serverPut.listen 8888
@@ -242,7 +242,7 @@ describe "Common requests", ->
 
         before ->
             @client = request.createClient "http://localhost:8888/"
-            @serverPut = fakeServer msg:"ok", 204, (body, req) ->
+            @serverPut = fakeServer msg: "ok", 204, (body, req) ->
                 if req.method is "PUT"
                     should.exist body.putData
                 if req.method is "DELETE"
@@ -271,7 +271,7 @@ describe "Common requests", ->
     describe "client.head", ->
 
         before ->
-            @serverHead = fakeServer msg:"ok", 200, (body, req) ->
+            @serverHead = fakeServer msg: "ok", 200, (body, req) ->
                 req.method.should.equal "HEAD"
                 req.url.should.equal "/test-path/124"
             @serverHead.listen 8888
@@ -296,7 +296,7 @@ describe "Common requests", ->
     describe "client.get (promise)", ->
 
         before ->
-            @serverGet = fakeServer msg:"ok", 200, (body, req) ->
+            @serverGet = fakeServer msg: "ok", 200, (body, req) ->
                 req.method.should.equal "GET"
                 req.url.should.equal "/test-path/"
             @serverGet.listen 8888
@@ -329,7 +329,7 @@ describe "Common requests", ->
     describe "client.post (promise)", ->
 
         before ->
-            @serverPost = fakeServer msg:"ok", 201, (body, req) ->
+            @serverPost = fakeServer msg: "ok", 201, (body, req) ->
                 should.exist body.postData
                 req.method.should.equal "POST"
                 req.url.should.equal  "/test-path/"
@@ -363,7 +363,7 @@ describe "Common requests", ->
     describe "client.put (promise)", ->
 
         before ->
-            @serverPut = fakeServer msg:"ok", 200, (body, req) ->
+            @serverPut = fakeServer msg: "ok", 200, (body, req) ->
                 should.exist body.putData
                 req.method.should.equal "PUT"
                 req.url.should.equal  "/test-path/123"
@@ -393,7 +393,7 @@ describe "Common requests", ->
     describe "client.patch (promise)", ->
 
         before ->
-            @serverPatch = fakeServer msg:"ok", 200, (body, req) ->
+            @serverPatch = fakeServer msg: "ok", 200, (body, req) ->
                 should.exist body.patchData
                 req.method.should.equal "PATCH"
                 req.url.should.equal  "/test-path/123"
@@ -423,7 +423,7 @@ describe "Common requests", ->
     describe "client.del (promise)", ->
 
         before ->
-            @serverPut = fakeServer msg:"ok", 204, (body, req) ->
+            @serverPut = fakeServer msg: "ok", 204, (body, req) ->
                 req.method.should.equal "DELETE"
                 req.url.should.equal  "/test-path/123"
             @serverPut.listen 8888
@@ -451,7 +451,7 @@ describe "Common requests", ->
     describe "client.head (promise)", ->
 
         before ->
-            @serverHead = fakeServer msg:"ok", 200, (body, req) ->
+            @serverHead = fakeServer msg: "ok", 200, (body, req) ->
                 req.method.should.equal "HEAD"
                 req.url.should.equal "/test-path/124"
             @serverHead.listen 8888
@@ -770,7 +770,7 @@ describe "Basic authentication", ->
     describe "authentified client.get", ->
 
         before ->
-            @serverGet = fakeServer msg:"ok", 200, (body, req) ->
+            @serverGet = fakeServer msg: "ok", 200, (body, req) ->
                 auth = req.headers.authorization.split(' ')[1]
                 auth = new Buffer(auth, 'base64').toString('ascii')
                 auth.should.equal 'john:secret'
@@ -798,7 +798,7 @@ describe "Basic authentication", ->
 describe "Digest authentication", ->
 
     before ->
-        @serverGet = fakeServerWithDigestAuth msg:"ok", 200, (body, req) ->
+        @serverGet = fakeServerWithDigestAuth msg: "ok", 200, (body, req) ->
             should.exist req.headers.authorization
             req.method.should.equal "GET"
             req.url.should.equal  "/test-path/"
@@ -827,7 +827,7 @@ describe "Set token", ->
     describe "authentified client.get", ->
 
         before ->
-            @serverGet = fakeServer msg:"ok", 200, (body, req) ->
+            @serverGet = fakeServer msg: "ok", 200, (body, req) ->
                 token = req.headers['x-auth-token']
                 token.should.equal 'cozy'
                 req.method.should.equal "GET"
@@ -854,7 +854,7 @@ describe "Set token", ->
     describe "authentified client.post", ->
 
         before ->
-            @serverPost = fakeServer msg:"ok", 200, (body, req) ->
+            @serverPost = fakeServer msg: "ok", 200, (body, req) ->
                 token = req.headers['x-auth-token']
                 token.should.equal 'cozy'
                 should.exist body.postData
@@ -886,7 +886,7 @@ describe "Set OAuth2 bearer token", ->
     describe "authentified client.get", ->
 
         before ->
-            @serverGet = fakeServer msg:"ok", 200, (body, req) ->
+            @serverGet = fakeServer msg: "ok", 200, (body, req) ->
                 bearerToken = req.headers['authorization']
                 # Check that the bearer prefix has been added
                 bearerToken.should.equal 'Bearer cozy'
@@ -914,7 +914,7 @@ describe "Set OAuth2 bearer token", ->
 describe "Set header on request", ->
 
     before ->
-        @serverReq = fakeServer msg:"ok", 200, (body, req) ->
+        @serverReq = fakeServer msg: "ok", 200, (body, req) ->
             contentType = req.headers['content-type']
             contentType.should.equal 'application/json-patch+json'
             req.method.should.equal 'PATCH'

@@ -103,7 +103,7 @@ client.headers['Cookie'] = 'Your cookie';
 
 ```javascript
 client.get('posts/')
-  .then(function (result) {
+  .then(function(result) {
     console.log(result.res.statusCode);
     console.log(result.body); 
   }).catch(err) {
