@@ -106,7 +106,7 @@ class requestJson.JsonClient
             return new Promise((resolve, reject) =>
                 @handleRequest(method, path, json, options, (err, res, body) ->
                     return reject(err) if err
-                    resolve([res, body])
+                    resolve {res, body}
                 , parse)
             )
 
