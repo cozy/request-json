@@ -38,18 +38,18 @@ data = {
   title: 'my new title'
 };
 client.put('posts/123/', data, function(err, res, body) {
-  return console.log(response.statusCode);
+  return console.log(res.statusCode);
 });
 
 client.del('posts/123/', function(err, res, body) {
-  return console.log(response.statusCode);
+  return console.log(res.statusCode);
 });
 
 data = {
   title: 'my patched title'
 };
 client.patch('posts/123/', data, function(err, res, body) {
-  return console.log(response.statusCode);
+  return console.log(res.statusCode);
 });
 ```
 
