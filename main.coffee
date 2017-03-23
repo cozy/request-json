@@ -128,17 +128,17 @@ class requestJson.JsonClient
 
     # Send a POST request to path with given JSON as body.
     post: (path, json, options, callback, parse = true) ->
-        @handleRequest 'POST', path, json, options, callback
+        @handleRequest 'POST', path, json, options, callback, parse
 
 
     # Send a PUT request to path with given JSON as body.
     put: (path, json, options, callback, parse = true) ->
-        @handleRequest 'PUT', path, json, options, callback
+        @handleRequest 'PUT', path, json, options, callback, parse
 
 
     # Send a PATCH request to path with given JSON as body.
     patch: (path, json, options, callback, parse = true) ->
-        @handleRequest 'PATCH', path, json, options, callback
+        @handleRequest 'PATCH', path, json, options, callback, parse
 
 
     # Send a HEAD request to path. Expect no response body.
@@ -148,7 +148,7 @@ class requestJson.JsonClient
 
     # Send a DELETE request to path.
     del: (path, options, callback, parse = true) ->
-        @handleRequest 'DELETE', path, null, options, callback
+        @handleRequest 'DELETE', path, null, options, callback, parse
 
 
     # Alias for del
@@ -161,9 +161,12 @@ class requestJson.JsonClient
     # Use a read stream for that.
     # If you use a stream, it must have a "path" attribute...
     # ...with its path or filename
-    sendFile: (path, files, data, callback) ->
-        callback = data if typeof(data) is "function"
-        req = @post path, null, callback, false #do not parse
+    sendFile: (path, files, data, callback, parse = false) ->
+        if typeof(data) is "function"
+            callback = data
+            parse = callback
+
+        req = @post path, null, callback, parse
 
         form = req.form()
         unless typeof(data) is "function"
@@ -193,9 +196,12 @@ class requestJson.JsonClient
     # Use a read stream for that.
     # If you use a stream, it must have a "path" attribute...
     # ...with its path or filename
-    putFile: (path, file, data, callback) ->
-        callback = data if typeof(data) is "function"
-        req = @put path, null, callback, false #do not parse
+    putFile: (path, file, data, callback, parse=false) ->
+        if typeof(data) is "function"
+            parse = callback or false
+            callback = data
+
+        req = @put path, null, {}, callback, parse
 
         # file is a string so it is a file path
         if typeof file is "string"

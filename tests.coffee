@@ -42,7 +42,7 @@ fakeUploadServer = (url, dir, callback= -> ) ->
     app.post url, (req, res) ->
         for key, file of req.files
             fs.renameSync file.path, dir + '/' + file.name
-        res.sendStatus 201
+        res.send {uploadSuccess: true}, 201
 
 rawBody = (req, res, next) ->
     req.setEncoding 'utf8'
@@ -558,7 +558,7 @@ describe "Files", ->
             @server.close()
 
         it "When I send get request to server", (done) ->
-            stream = @client.saveFileAsStream 'test-file', (err, res, body) ->
+            stream = @client.saveFileAsStream 'test-file', (err, res, body) =>
                 should.not.exist err
                 res.statusCode.should.be.equal 200
                 done()
@@ -594,6 +594,36 @@ describe "Files", ->
             fileStats = fs.statSync './README.md'
             resultStats = fs.statSync './up/README.md'
             resultStats.size.should.equal fileStats.size
+
+    describe "client.sendFile (parse response)", ->
+
+        before ->
+            @app = fakeUploadServer '/test-file', './up'
+            @server = @app.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+
+        after ->
+            for name in fs.readdirSync './up'
+                fs.unlinkSync(path.join './up', name)
+            fs.rmdirSync './up'
+            @server.close()
+
+        it "When I send post request to server and parse response", (done) ->
+            file = './README.md'
+            @client.sendFile 'test-file', file, (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 201
+                @response = body
+                done()
+            , true
+
+        it "Then the correct file is uploaded", ->
+            fileStats = fs.statSync './README.md'
+            resultStats = fs.statSync './up/README.md'
+            resultStats.size.should.equal fileStats.size
+
+        it "And the response is parsed.", ->
+            @response.uploadSuccess.should.equal true
 
 
     describe "client.sendFileFromStream", ->
