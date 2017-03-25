@@ -5,6 +5,9 @@ fs = require "fs"
 path = require "path"
 bodyParser = require 'body-parser'
 multiparty = require 'connect-multiparty'
+compression = require 'compression'
+zlib = require 'zlib'
+
 request = require("./main")
 global.Promise ?= require 'lie'
 
@@ -43,6 +46,14 @@ fakeUploadServer = (url, dir, callback= -> ) ->
         for key, file of req.files
             fs.renameSync file.path, dir + '/' + file.name
         res.send {uploadSuccess: true}, 201
+
+fakeGzipServer = ->
+    app = express()
+    app.use(compression(fiter: -> true))
+    app.get '/gzip-route', (req, res, next) ->
+        res.set 'Content-Encoding', 'gzip'
+        res.send gzipSuccess: "ok"
+    return app
 
 rawBody = (req, res, next) ->
     req.setEncoding 'utf8'
@@ -613,7 +624,7 @@ describe "Files", ->
             @client.sendFile 'test-file', file, (error, response, body) =>
                 should.not.exist error
                 response.statusCode.should.be.equal 201
-                @response = body
+                @body = body
                 done()
             , true
 
@@ -623,7 +634,7 @@ describe "Files", ->
             resultStats.size.should.equal fileStats.size
 
         it "And the response is parsed.", ->
-            @response.uploadSuccess.should.equal true
+            @body.uploadSuccess.should.equal true
 
 
     describe "client.sendFileFromStream", ->
@@ -968,3 +979,27 @@ describe "Set header on request", ->
         should.exist @body.msg
         @body.msg.should.equal "ok"
 
+
+describe "Handle Gzipped response", ->
+
+    describe "client.get", ->
+
+        before ->
+            @app = fakeGzipServer()
+            @server = @app.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+            @client.headers['Accept-Encoding'] = 'gzip'
+
+        after ->
+            @server.close()
+
+        it "When I send a get request and expect a gzipped response", (done) ->
+            @client.get "gzip-route/", (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 200
+                @body = body
+                done()
+
+        it "Then I get gzipSuccess: 'ok' as answer.", ->
+            should.exist @body.gzipSuccess
+            @body.gzipSuccess.should.equal "ok"
