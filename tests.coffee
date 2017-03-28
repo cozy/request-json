@@ -5,6 +5,9 @@ fs = require "fs"
 path = require "path"
 bodyParser = require 'body-parser'
 multiparty = require 'connect-multiparty'
+compression = require 'compression'
+zlib = require 'zlib'
+
 request = require("./main")
 global.Promise ?= require 'lie'
 
@@ -42,7 +45,15 @@ fakeUploadServer = (url, dir, callback= -> ) ->
     app.post url, (req, res) ->
         for key, file of req.files
             fs.renameSync file.path, dir + '/' + file.name
-        res.sendStatus 201
+        res.send {uploadSuccess: true}, 201
+
+fakeGzipServer = ->
+    app = express()
+    app.use(compression(fiter: -> true))
+    app.get '/gzip-route', (req, res, next) ->
+        res.set 'Content-Encoding', 'gzip'
+        res.send gzipSuccess: "ok"
+    return app
 
 rawBody = (req, res, next) ->
     req.setEncoding 'utf8'
@@ -558,7 +569,7 @@ describe "Files", ->
             @server.close()
 
         it "When I send get request to server", (done) ->
-            stream = @client.saveFileAsStream 'test-file', (err, res, body) ->
+            stream = @client.saveFileAsStream 'test-file', (err, res, body) =>
                 should.not.exist err
                 res.statusCode.should.be.equal 200
                 done()
@@ -594,6 +605,36 @@ describe "Files", ->
             fileStats = fs.statSync './README.md'
             resultStats = fs.statSync './up/README.md'
             resultStats.size.should.equal fileStats.size
+
+    describe "client.sendFile (parse response)", ->
+
+        before ->
+            @app = fakeUploadServer '/test-file', './up'
+            @server = @app.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+
+        after ->
+            for name in fs.readdirSync './up'
+                fs.unlinkSync(path.join './up', name)
+            fs.rmdirSync './up'
+            @server.close()
+
+        it "When I send post request to server and parse response", (done) ->
+            file = './README.md'
+            @client.sendFile 'test-file', file, (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 201
+                @body = body
+                done()
+            , true
+
+        it "Then the correct file is uploaded", ->
+            fileStats = fs.statSync './README.md'
+            resultStats = fs.statSync './up/README.md'
+            resultStats.size.should.equal fileStats.size
+
+        it "And the response is parsed.", ->
+            @body.uploadSuccess.should.equal true
 
 
     describe "client.sendFileFromStream", ->
@@ -938,3 +979,27 @@ describe "Set header on request", ->
         should.exist @body.msg
         @body.msg.should.equal "ok"
 
+
+describe "Handle Gzipped response", ->
+
+    describe "client.get", ->
+
+        before ->
+            @app = fakeGzipServer()
+            @server = @app.listen 8888
+            @client = request.createClient "http://localhost:8888/"
+            @client.headers['Accept-Encoding'] = 'gzip'
+
+        after ->
+            @server.close()
+
+        it "When I send a get request and expect a gzipped response", (done) ->
+            @client.get "gzip-route/", (error, response, body) =>
+                should.not.exist error
+                response.statusCode.should.be.equal 200
+                @body = body
+                done()
+
+        it "Then I get gzipSuccess: 'ok' as answer.", ->
+            should.exist @body.gzipSuccess
+            @body.gzipSuccess.should.equal "ok"

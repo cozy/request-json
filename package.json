@@ -45,6 +45,7 @@
     "chai": "3.5.0",
     "coffee-script": "1.10.0",
     "coffeelint": "1.15.7",
+    "compression": "1.6.2",
     "connect-multiparty": "2.0.0",
     "express": "4.14.0",
     "lie": "3.1.0",
