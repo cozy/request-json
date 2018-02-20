@@ -37,8 +37,8 @@
   },
   "main": "./main.js",
   "dependencies": {
-    "depd": "1.1.1",
-    "request": "2.81.0"
+    "depd": "1.1.2",
+    "request": "2.83.0"
   },
   "devDependencies": {
     "body-parser": "1.17.2",
